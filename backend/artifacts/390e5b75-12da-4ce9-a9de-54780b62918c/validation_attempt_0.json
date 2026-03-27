@@ -1,0 +1,120 @@
+{
+    "valid": false,
+    "issues": [
+        "Loop detected: node_2 -> node_4 -> node_2 (via recursive_content criteria)",
+        "Missing 'no' branch for root node",
+        "Missing 'no' branch for node_2",
+        "Missing 'no' branch for node_4",
+        "Missing 'no' branch for node_5"
+    ],
+    "simulations": [
+        {
+            "path": [
+                "root-yes",
+                "node_2-yes",
+                "node_4-yes"
+            ],
+            "outcome": "refer"
+        },
+        {
+            "path": [
+                "root-yes",
+                "node_2-yes",
+                "node_4-no"
+            ],
+            "outcome": "refer"
+        },
+        {
+            "path": [
+                "root-yes",
+                "node_2-no",
+                "node_5"
+            ],
+            "outcome": "refer"
+        }
+    ],
+    "fixed_tree": {
+        "root": {
+            "name": "Initial Master Assessment",
+            "type": "question",
+            "criteria": "symptom list",
+            "yes": {
+                "$ref": "#node_2"
+            },
+            "no": {
+                "$ref": "#node_3"
+            },
+            "action": "refer"
+        },
+        "nodes": {
+            "node_2": {
+                "type": "recursive_content",
+                "criteria": "fever and cough",
+                "yes": {
+                    "$ref": "#node_4"
+                },
+                "no": {
+                    "$ref": "#node_6"
+                }
+            },
+            "node_3": {
+                "type": "question",
+                "criteria": "other symptoms",
+                "yes": {
+                    "$ref": "#node_7"
+                },
+                "no": {
+                    "$ref": "#node_8"
+                }
+            },
+            "node_4": {
+                "type": "question",
+                "criteria": "additional symptoms",
+                "yes": {
+                    "$ref": "#node_9"
+                },
+                "no": {
+                    "$ref": "#node_10"
+                }
+            },
+            "node_5": {
+                "type": "question",
+                "criteria": "final decision",
+                "yes": {
+                    "$ref": "#node_11"
+                },
+                "no": {
+                    "$ref": "#node_12"
+                }
+            },
+            "node_6": {
+                "type": "action",
+                "action": "provide information"
+            },
+            "node_7": {
+                "type": "action",
+                "action": "refer"
+            },
+            "node_8": {
+                "type": "action",
+                "action": "follow up"
+            },
+            "node_9": {
+                "type": "action",
+                "action": "refer"
+            },
+            "node_10": {
+                "type": "action",
+                "action": "monitor"
+            },
+            "node_11": {
+                "type": "action",
+                "action": "treat"
+            },
+            "node_12": {
+                "type": "action",
+                "action": "discharge"
+            }
+        }
+    }
+}

@@ -1,0 +1,40 @@
+{
+    "chunks": [
+        {
+            "id": "unique_id_1",
+            "title": "Introduction",
+            "content": "This document provides essential information on asthma management, focusing on inhaled corticosteroids and long-acting beta-agonists.",
+            "type": "other"
+        },
+        {
+            "id": "unique_id_2",
+            "title": "ICSs and LABAs",
+            "content": "ICSs are the most effective medications for long-term control of persistent asthma. They are inhaled directly to the lungs to reduce inflammation. LABAs should be used in combination with ICSs for asthma control. They are not for quick relief and have specific usage guidelines.",
+            "type": "criteria"
+        },
+        {
+            "id": "unique_id_3",
+            "title": "Patient Education: Common Questions",
+            "content": "Addressing patient concerns about ICSs, including side effects, growth effects, and safety during pregnancy.",
+            "type": "other"
+        },
+        {
+            "id": "unique_id_4",
+            "title": "Patient Education: Response to LABA Questions",
+            "content": "Clarifying the benefits and risks of LABAs, including the FDA warning and proper usage.",
+            "type": "other"
+        },
+        {
+            "id": "unique_id_5",
+            "title": "Resources",
+            "content": "A list of educational resources and organizations for asthma management.",
+            "type": "other"
+        },
+        {
+            "id": "unique_id_6",
+            "title": "Key Points",
+            "content": "ICSs are first-line for persistent asthma control. LABAs must be used with ICSs and not for acute symptoms. Monitor for side effects and adjust doses as needed.",
+            "type": "criteria"
+        }
+    ]
+}

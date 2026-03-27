@@ -1,0 +1,52 @@
+{
+    "nodes": [
+        {
+            "id": "root",
+            "type": "root",
+            "label": "Root",
+            "description": "",
+            "origin": null,
+            "output_type": null,
+            "output_map": {},
+            "condition": {},
+            "metadata": {}
+        },
+        {
+            "id": "patient_education",
+            "type": "question",
+            "label": "Patient Education",
+            "description": "Key points for patients include daily use of ICSs, proper technique, and understanding the difference between ICSs and other steroids.",
+            "origin": "chunk",
+            "output_type": "string",
+            "output_map": {
+                "yes": "continue",
+                "no": "continue"
+            },
+            "condition": {},
+            "metadata": {}
+        },
+        {
+            "id": "continue",
+            "type": "outcome",
+            "label": "Continue",
+            "description": "",
+            "origin": "chunk",
+            "output_type": null,
+            "output_map": {},
+            "condition": {},
+            "metadata": {}
+        }
+    ],
+    "edges": [
+        {
+            "source_id": "root",
+            "target_id": "patient_education",
+            "label": "Starts with"
+        },
+        {
+            "source_id": "patient_education",
+            "target_id": "continue",
+            "label": "Based on patient understanding"
+        }
+    ]
+}

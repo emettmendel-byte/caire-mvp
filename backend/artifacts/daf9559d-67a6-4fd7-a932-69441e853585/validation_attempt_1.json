@@ -1,0 +1,23 @@
+{
+    "valid": true,
+    "issues": [],
+    "simulations": [
+        {
+            "path": [
+                "node_1-yes",
+                "node_2"
+            ],
+            "outcome": "refer"
+        },
+        {
+            "path": [
+                "node_1-no",
+                "node_3"
+            ],
+            "outcome": "end"
+        }
+    ],
+    "fixed_tree": {
+        "root": "Initial Assessment"
+    }
+}

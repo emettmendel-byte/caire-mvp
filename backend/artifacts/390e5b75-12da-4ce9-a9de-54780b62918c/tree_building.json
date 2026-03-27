@@ -1,0 +1,26 @@
+{
+    "root": {
+        "name": "Initial Master Assessment",
+        "type": "question",
+        "criteria": "symptom list",
+        "yes": {
+            "$ref": "#node_2"
+        },
+        "no": {
+            "$ref": "#node_3"
+        },
+        "action": "refer"
+    },
+    "nodes": {
+        "node_2": {
+            "type": "recursive_content",
+            "criteria": "fever and cough",
+            "yes": {
+                "$ref": "#node_4"
+            },
+            "no": {
+                "$ref": "#node_5"
+            }
+        }
+    }
+}

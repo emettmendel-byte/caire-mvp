@@ -1,0 +1,22 @@
+{
+    "decisions": [
+        {
+            "id": "node_1",
+            "chunk_ids": [
+                "chunk1"
+            ],
+            "condition": "Is the user a customer?",
+            "branches": {
+                "yes": {
+                    "action": "refer",
+                    "next": null
+                },
+                "no": {
+                    "next": "node_2"
+                }
+            },
+            "source": "page/section quote"
+        }
+    ],
+    "start_node": "node_1"
+}

@@ -1,0 +1,136 @@
+{
+    "valid": true,
+    "issues": [
+        "Duplicate node id 'q_fever' found in multiple decisions. Renamed to 'q_fever_1', 'q_fever_2', etc. in the corrected nodes list."
+    ],
+    "nodes": [
+        {
+            "id": "q_fever_1",
+            "type": "question",
+            "origin": "root",
+            "output_type": "string",
+            "output_map": {
+                "yes": "q_breathing",
+                "no": "out_routine"
+            },
+            "label": "Does the patient have fever (>38\u00b0C)?",
+            "description": "Oral or tympanic temperature",
+            "condition": {
+                "variable": "entry_point",
+                "operator": "==",
+                "threshold": "start_assessment"
+            },
+            "metadata": {
+                "question": {
+                    "value_type": "number",
+                    "unit": "C",
+                    "threshold": 38,
+                    "options": [
+                        "yes",
+                        "no"
+                    ]
+                }
+            }
+        },
+        {
+            "id": "out_routine",
+            "type": "outcome",
+            "origin": "q_fever_1",
+            "output_type": "string",
+            "output_map": {},
+            "label": "Routine follow-up",
+            "description": "No fever, routine follow-up",
+            "condition": null
+        },
+        {
+            "id": "q_breathing",
+            "type": "question",
+            "origin": "q_fever_1",
+            "output_type": "string",
+            "output_map": {
+                "yes": "out_urgent",
+                "no": "out_routine"
+            },
+            "label": "Does the patient have difficulty breathing?",
+            "description": "Assess respiratory distress",
+            "condition": {
+                "variable": "q_fever_1",
+                "operator": "==",
+                "threshold": "yes"
+            },
+            "metadata": {
+                "question": {
+                    "value_type": "number",
+                    "unit": "none",
+                    "threshold": 0,
+                    "options": [
+                        "yes",
+                        "no"
+                    ]
+                }
+            }
+        },
+        {
+            "id": "out_urgent",
+            "type": "outcome",
+            "origin": "q_breathing",
+            "label": "Urgent \u2013 seek emergency care",
+            "description": "Recommend ED or urgent evaluation",
+            "condition": {
+                "variable": "q_breathing",
+                "operator": "==",
+                "threshold": "yes"
+            }
+        },
+        {
+            "id": "out_assessment",
+            "type": "outcome",
+            "origin": "q_breathing",
+            "label": "Further assessment"
+        },
+        {
+            "id": "out_urgent_breathing",
+            "type": "outcome",
+            "origin": "q_breathing",
+            "label": "Urgent care for breathing"
+        },
+        {
+            "id": "out_urgent_fever",
+            "type": "outcome",
+            "origin": "q_fever_1",
+            "label": "Urgent care for fever"
+        }
+    ],
+    "edges": [
+        {
+            "source_id": "q_fever_1",
+            "target_id": "out_routine",
+            "label": "No"
+        },
+        {
+            "source_id": "q_fever_1",
+            "target_id": "out_urgent_fever",
+            "label": "Yes"
+        },
+        {
+            "source_id": "q_fever_1",
+            "target_id": "q_breathing",
+            "label": "yes"
+        },
+        {
+            "source_id": "q_breathing",
+            "target_id": "out_assessment",
+            "label": "No"
+        },
+        {
+            "source_id": "q_breathing",
+            "target_id": "out_urgent_breathing",
+            "label": "Yes"
+        },
+        {
+            "source_id": "q_breathing",
+            "target_id": "out_urgent",
+            "label": "Yes"
+        }
+    ]
+}

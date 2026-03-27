@@ -1,0 +1,16 @@
+{
+    "nodes": [
+        {
+            "id": "root",
+            "type": "root",
+            "label": "Root",
+            "description": "",
+            "origin": null,
+            "output_type": null,
+            "output_map": {},
+            "condition": {},
+            "metadata": {}
+        }
+    ],
+    "edges": []
+}

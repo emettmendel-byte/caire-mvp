@@ -1,0 +1,68 @@
+{
+    "nodes": [
+        {
+            "id": "root",
+            "type": "root",
+            "label": "Root",
+            "description": "",
+            "origin": null,
+            "output_type": null,
+            "output_map": {},
+            "condition": {},
+            "metadata": {}
+        },
+        {
+            "id": "node_1",
+            "type": "question",
+            "label": "Question 1",
+            "description": "Does the patient have asthma?",
+            "origin": "root",
+            "output_type": "boolean",
+            "output_map": {
+                "yes": "node_yes_1",
+                "no": "node_no_1"
+            },
+            "condition": {},
+            "metadata": {}
+        },
+        {
+            "id": "node_yes_1",
+            "type": "outcome",
+            "label": "Yes Outcome",
+            "description": "Patient has asthma",
+            "origin": "node_1",
+            "output_type": null,
+            "output_map": {},
+            "condition": {},
+            "metadata": {}
+        },
+        {
+            "id": "node_no_1",
+            "type": "outcome",
+            "label": "No Outcome",
+            "description": "Patient does not have asthma",
+            "origin": "node_1",
+            "output_type": null,
+            "output_map": {},
+            "condition": {},
+            "metadata": {}
+        }
+    ],
+    "edges": [
+        {
+            "source_id": "root",
+            "target_id": "node_1",
+            "label": "Start"
+        },
+        {
+            "source_id": "node_1",
+            "target_id": "node_yes_1",
+            "label": "Yes"
+        },
+        {
+            "source_id": "node_1",
+            "target_id": "node_no_1",
+            "label": "No"
+        }
+    ]
+}

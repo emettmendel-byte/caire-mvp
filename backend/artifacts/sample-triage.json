@@ -1,0 +1,94 @@
+{
+  "id": "sample-triage",
+  "version": "1.0.0",
+  "name": "Sample General Triage",
+  "description": "Example decision tree for CAIRE authoring UI",
+  "root_id": "root",
+  "nodes": [
+    {
+      "id": "root",
+      "type": "root",
+      "label": "Start assessment",
+      "description": "Begin triage flow"
+    },
+    {
+      "id": "q_fever",
+      "type": "question",
+      "origin": "root",
+      "output_type": "string",
+      "output_map": {
+        "yes": "q_breathing",
+        "no": "out_routine"
+      },
+      "label": "Does the patient have fever (>38°C)?",
+      "description": "Oral or tympanic temperature",
+      "condition": {
+        "variable": "entry_point",
+        "operator": "==",
+        "threshold": "start_assessment"
+      },
+      "metadata": {
+        "question": {
+          "value_type": "number",
+          "unit": "C",
+          "threshold": 38,
+          "options": ["yes", "no"]
+        }
+      }
+    },
+    {
+      "id": "q_breathing",
+      "type": "question",
+      "origin": "q_fever",
+      "output_type": "string",
+      "output_map": {
+        "yes": "out_urgent",
+        "no": "out_routine"
+      },
+      "label": "Difficulty breathing or chest pain?",
+      "description": "Acute dyspnea or chest discomfort",
+      "condition": {
+        "variable": "q_fever",
+        "operator": "==",
+        "threshold": "yes"
+      },
+      "metadata": {
+        "question": {
+          "value_type": "string",
+          "options": ["yes", "no", "unknown"]
+        }
+      }
+    },
+    {
+      "id": "out_urgent",
+      "type": "outcome",
+      "origin": "q_breathing",
+      "label": "Urgent – seek emergency care",
+      "description": "Recommend ED or urgent evaluation",
+      "condition": {
+        "variable": "q_breathing",
+        "operator": "==",
+        "threshold": "yes"
+      }
+    },
+    {
+      "id": "out_routine",
+      "type": "outcome",
+      "origin": ["q_fever", "q_breathing"],
+      "label": "Routine – primary care or self-care",
+      "description": "Schedule PCP or follow self-care guidance",
+      "condition": {
+        "variable": "activation_path",
+        "operator": "in",
+        "threshold": "q_fever=no OR q_breathing=no"
+      }
+    }
+  ],
+  "edges": [
+    { "source_id": "root", "target_id": "q_fever", "label": "Start" },
+    { "source_id": "q_fever", "target_id": "q_breathing", "label": "Yes" },
+    { "source_id": "q_fever", "target_id": "out_routine", "label": "No" },
+    { "source_id": "q_breathing", "target_id": "out_urgent", "label": "Yes" },
+    { "source_id": "q_breathing", "target_id": "out_routine", "label": "No" }
+  ]
+}

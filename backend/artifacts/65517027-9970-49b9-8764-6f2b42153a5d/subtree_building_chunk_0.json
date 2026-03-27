@@ -1,0 +1,78 @@
+{
+    "nodes": [
+        {
+            "id": "q_fever",
+            "type": "question",
+            "origin": "root",
+            "output_type": "string",
+            "output_map": {
+                "yes": "q_breathing",
+                "no": "out_routine"
+            },
+            "label": "Does the patient have fever (>38\u00b0C)?",
+            "description": "Oral or tympanic temperature",
+            "condition": {
+                "variable": "entry_point",
+                "operator": "==",
+                "threshold": "start_assessment"
+            },
+            "metadata": {
+                "question": {
+                    "value_type": "number",
+                    "unit": "C",
+                    "threshold": 38,
+                    "options": [
+                        "yes",
+                        "no"
+                    ]
+                }
+            }
+        },
+        {
+            "id": "out_urgent",
+            "type": "outcome",
+            "origin": "q_breathing",
+            "label": "Urgent \u2013 seek emergency care",
+            "description": "Recommend ED or urgent evaluation",
+            "condition": {
+                "variable": "q_breathing",
+                "operator": "=="
+            }
+        },
+        {
+            "id": "out_routine",
+            "type": "outcome",
+            "origin": "root",
+            "label": "Routine care",
+            "description": "No fever, proceed to routine care",
+            "condition": null
+        },
+        {
+            "id": "q_breathing",
+            "type": "question",
+            "origin": "q_fever_yes",
+            "output_type": "string",
+            "output_map": {
+                "yes": "out_urgent",
+                "no": "out_routine"
+            },
+            "label": "Does the patient have difficulty breathing?",
+            "description": "Assess respiratory distress",
+            "condition": {
+                "variable": "q_fever",
+                "operator": "==",
+                "threshold": "yes"
+            },
+            "metadata": {
+                "question": {
+                    "value_type": "string",
+                    "options": [
+                        "yes",
+                        "no"
+                    ]
+                }
+            }
+        }
+    ],
+    "edges": []
+}

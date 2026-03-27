@@ -1,0 +1,42 @@
+{
+    "diarrhea_management": {
+        "enhanced_care_vs_usual_care": {
+            "question": "In children up to 10 years of age with acute diarrhoea having risk factors (age, nutritional status, HIV status), what is the effectiveness of enhanced care (such as hospitalization, close clinical monitoring and/or longer follow-up after completion of treatment) compared to the usual care in improving clinical outcomes?",
+            "evidence_status": "Indirect evidence; no GRADE tables prepared",
+            "recommendations": {
+                "hospitalization": {
+                    "indirect": true,
+                    "rationale": "Evidence too indirect to prepare GRADE tables",
+                    "conditions": [
+                        "Age",
+                        "Nutritional status",
+                        "HIV status"
+                    ],
+                    "outcomes": [
+                        "Clinical outcomes"
+                    ]
+                }
+            }
+        },
+        "oral_rehydration_solution": {
+            "enhanced_os_vs_standard_os": {
+                "question": "In children up to 10 years of age with acute diarrhoea having risk factors (age, nutritional status, HIV status), what is the effectiveness of enhanced care (such as hospitalization, close clinical monitoring and/or longer follow-up after completion of treatment) compared to the usual care in improving clinical outcomes?",
+                "evidence_status": "Indirect evidence; no GRADE tables prepared",
+                "recommendations": {
+                    "hospitalization": {
+                        "indirect": true,
+                        "rationale": "Evidence too indirect to prepare GRADE tables",
+                        "conditions": [
+                            "Age",
+                            "Nutritional status",
+                            "HIV status"
+                        ],
+                        "outcomes": [
+                            "Clinical outcomes"
+                        ]
+                    }
+                }
+            }
+        }
+    }
+}

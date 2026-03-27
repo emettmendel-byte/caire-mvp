@@ -1,0 +1,43 @@
+{
+    "nodes": [
+        {
+            "id": "root",
+            "type": "root",
+            "label": "Root",
+            "description": "",
+            "origin": null,
+            "output_type": null,
+            "output_map": {},
+            "condition": {},
+            "metadata": {}
+        },
+        {
+            "id": "question_1",
+            "type": "question",
+            "label": "Medications - Inhaled Corticosteroids (ICS)",
+            "description": "ICSs are the cornerstone of asthma treatment, effective for long-term control by reducing airway inflammation.",
+            "origin": "root",
+            "output_type": "string",
+            "output_map": {
+                "answer": "question_1"
+            },
+            "condition": {
+                "variable": "answer",
+                "operator": "equals",
+                "threshold": "yes"
+            },
+            "metadata": {
+                "question": {
+                    "text": "Are ICSs effective for long-term control of asthma by reducing airway inflammation?"
+                }
+            }
+        }
+    ],
+    "edges": [
+        {
+            "source_id": "root",
+            "target_id": "question_1",
+            "label": "Start"
+        }
+    ]
+}

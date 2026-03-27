@@ -1,0 +1,41 @@
+{
+    "nodes": [
+        {
+            "id": "root",
+            "type": "root",
+            "label": "Root",
+            "description": "",
+            "origin": null,
+            "output_type": null,
+            "output_map": {},
+            "condition": {},
+            "metadata": {}
+        },
+        {
+            "id": "hospitalization_conditions",
+            "type": "question",
+            "label": "Hospitalization Conditions",
+            "description": "Conditions for hospitalization: Age, Nutritional status, HIV status",
+            "origin": "root",
+            "output_type": "string",
+            "output_map": {
+                "age": "age_node",
+                "nutritional_status": "nutritional_node",
+                "hiv_status": "hiv_node"
+            },
+            "condition": {},
+            "metadata": {
+                "question": {
+                    "text": "What are the conditions for hospitalization?"
+                }
+            }
+        }
+    ],
+    "edges": [
+        {
+            "source_id": "root",
+            "target_id": "hospitalization_conditions",
+            "label": "Start"
+        }
+    ]
+}

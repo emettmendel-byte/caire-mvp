@@ -1,0 +1,115 @@
+{
+    "nodes": [
+        {
+            "id": "q_fever",
+            "type": "question",
+            "origin": "root",
+            "output_type": "string",
+            "output_map": {
+                "yes": "q_breathing",
+                "no": "out_routine"
+            },
+            "label": "Does the patient have fever (>38\u00b0C)?",
+            "description": "Oral or tympanic temperature",
+            "condition": {
+                "variable": "entry_point",
+                "operator": "==",
+                "threshold": "start_assessment"
+            },
+            "metadata": {
+                "question": {
+                    "value_type": "number",
+                    "unit": "C",
+                    "threshold": 38,
+                    "options": [
+                        "yes",
+                        ""
+                    ]
+                }
+            }
+        },
+        {
+            "id": "out_routine",
+            "type": "outcome",
+            "origin": "q_fever",
+            "output_type": "string",
+            "output_map": {},
+            "label": "Routine follow-up",
+            "description": "No fever, routine follow-up recommended",
+            "condition": null,
+            "metadata": {}
+        },
+        {
+            "id": "q_breathing",
+            "type": "question",
+            "origin": "q_fever",
+            "output_type": "string",
+            "output_map": {
+                "yes": "out_breathing_issue",
+                "no": "out_no_issue"
+            },
+            "label": "Does the patient have breathing difficulties?",
+            "description": "Shortness of breath or wheezing",
+            "condition": {
+                "variable": "previous_answer",
+                "operator": "==",
+                "threshold": "yes"
+            },
+            "metadata": {
+                "question": {
+                    "value_type": "number",
+                    "unit": "",
+                    "threshold": 0,
+                    "options": [
+                        "yes",
+                        "no"
+                    ]
+                }
+            }
+        },
+        {
+            "id": "out_breathing_issue",
+            "type": "outcome",
+            "origin": "q_breathing",
+            "output_type": "string",
+            "output_map": {},
+            "label": "Breathing issue",
+            "description": "Patient has breathing difficulties, further assessment needed",
+            "condition": null,
+            "metadata": {}
+        },
+        {
+            "id": "out_no_issue",
+            "type": "outcome",
+            "origin": "q_breathing",
+            "output_type": "string",
+            "output_map": {},
+            "label": "No issue",
+            "description": "No breathing issues, routine follow-up",
+            "condition": null,
+            "metadata": {}
+        }
+    ],
+    "edges": [
+        {
+            "source_id": "q_fever",
+            "target_id": "out_routine",
+            "label": "No"
+        },
+        {
+            "source_id": "q_fever",
+            "target_id": "q_breathing",
+            "label": "Yes"
+        },
+        {
+            "source_id": "q_breathing",
+            "target_id": "out_breathing_issue",
+            "label": "Yes"
+        },
+        {
+            "source_id": "q_breathing",
+            "target_id": "out_no_issue",
+            "label": "No"
+        }
+    ]
+}

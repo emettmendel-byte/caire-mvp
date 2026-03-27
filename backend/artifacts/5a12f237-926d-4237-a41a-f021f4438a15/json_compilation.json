@@ -1,0 +1,127 @@
+{
+    "id": "asthma-guidelines",
+    "version": "1.0.0",
+    "name": "Asthma Guidelines",
+    "description": "Clinical guideline for asthma management.",
+    "root_id": "root",
+    "nodes": [
+        {
+            "id": "root",
+            "type": "root",
+            "label": "Start assessment",
+            "description": "Begin triage flow"
+        },
+        {
+            "id": "age_yes",
+            "type": "question",
+            "origin": "root",
+            "output_type": "string",
+            "output_map": {
+                "male": "male_yes",
+                "female": "male_no"
+            },
+            "label": "Are you male?",
+            "description": "",
+            "condition": {
+                "variable": "entry_point",
+                "operator": "==",
+                "threshold": "start_assessment"
+            },
+            "metadata": {
+                "question": {
+                    "value_type": "string",
+                    "options": [
+                        "male",
+                        "female"
+                    ]
+                }
+            }
+        },
+        {
+            "id": "male_yes",
+            "type": "outcome",
+            "origin": "age_yes",
+            "label": "You are a male and above 18.",
+            "description": ""
+        },
+        {
+            "id": "male_no",
+            "type": "outcome",
+            "origin": "age_yes",
+            "label": "You are a male and below 18.",
+            "description": ""
+        },
+        {
+            "id": "age_no",
+            "type": "question",
+            "origin": "root",
+            "output_type": "string",
+            "output_map": {
+                "female": "female_yes",
+                "male": "female_no"
+            },
+            "label": "Are you female?",
+            "description": "",
+            "condition": {
+                "variable": "entry_point",
+                "operator": "==",
+                "threshold": "start_assessment"
+            },
+            "metadata": {
+                "question": {
+                    "value_type": "string",
+                    "options": [
+                        "female",
+                        "male"
+                    ]
+                }
+            }
+        },
+        {
+            "id": "female_yes",
+            "type": "outcome",
+            "origin": "age_no",
+            "label": "You are a female and above 18.",
+            "description": ""
+        },
+        {
+            "id": "female_no",
+            "type": "outcome",
+            "origin": "age_no",
+            "label": "You are a female and below 18.",
+            "description": ""
+        }
+    ],
+    "edges": [
+        {
+            "source_id": "root",
+            "target_id": "age_yes",
+            "label": "yes"
+        },
+        {
+            "source_id": "root",
+            "target_id": "age_no",
+            "label": "no"
+        },
+        {
+            "source_id": "age_yes",
+            "target_id": "male_yes",
+            "label": "male"
+        },
+        {
+            "source_id": "age_yes",
+            "target_id": "male_no",
+            "label": "female"
+        },
+        {
+            "source_id": "age_no",
+            "target_id": "female_yes",
+            "label": "female"
+        },
+        {
+            "source_id": "age_no",
+            "target_id": "female_no",
+            "label": "male"
+        }
+    ]
+}

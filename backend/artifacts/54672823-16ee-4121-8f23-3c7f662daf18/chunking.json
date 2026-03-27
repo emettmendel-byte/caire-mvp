@@ -1,0 +1,34 @@
+{
+    "chunks": [
+        {
+            "id": "unique_id_1",
+            "title": "Introduction",
+            "content": "This document provides essential information on asthma management, focusing on inhaled cortic (ICS) and long-acting beta-agonists (LABAs).",
+            "type": "other"
+        },
+        {
+            "id": "unique_id_2",
+            "title": "Medications - Inhaled Corticosteroids (ICS)",
+            "content": "ICSs are the cornerstone of asthma treatment, effective for long-term control by reducing airway inflammation.",
+            "type": "criteria"
+        },
+        {
+            "id": "unique_id_3",
+            "title": "Medications - Long-Acting Beta-Agonists (LABAs)",
+            "content": "LABAs are used in combination with ICSs for better asthma control, but carry risks if used alone.",
+            "type": "criteria"
+        },
+        {
+            "id": "unique_id_4",
+            "title": "Patient Education",
+            "content": "Key points for patients include daily use of ICSs, proper technique, and understanding the difference between ICSs and other steroids.",
+            "type": "other"
+        },
+        {
+            "id": "unique_id_5",
+            "title": "Resources",
+            "content": "Provides links to national guidelines and organizations for further information on asthma management.",
+            "type": "other"
+        }
+    ]
+}

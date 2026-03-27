@@ -1,0 +1,25 @@
+{
+    "valid": false,
+    "issues": [
+        "Loop detected: node1 -> node2"
+    ],
+    "simulations": [
+        {
+            "path": [
+                "node_1",
+                "yes"
+            ],
+            "outcome": "refer"
+        },
+        {
+            "path": [
+                "node_3",
+                "no"
+            ],
+            "outcome": "end"
+        }
+    ],
+    "fixed_tree": {
+        "root": "Initial Assessment"
+    }
+}

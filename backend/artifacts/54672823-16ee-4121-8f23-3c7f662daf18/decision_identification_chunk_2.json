@@ -1,0 +1,79 @@
+{
+    "nodes": [
+        {
+            "id": "root",
+            "type": "root",
+            "label": "Decision Point",
+            "description": "",
+            "origin": null,
+            "output_type": null,
+            "output_map": {},
+            "condition": {},
+            "metadata": {}
+        },
+        {
+            "id": "use_with_ics",
+            "type": "question",
+            "label": "Use with ICS",
+            "description": "Are LABAs used in combination with ICSs?",
+            "origin": "root",
+            "output_type": "boolean",
+            "output_map": {
+                "true": "outcome_positive",
+                "false": "outcome_negative"
+            },
+            "condition": {
+                "variable": "use_with_ics",
+                "operator": "equals",
+                "threshold": "true"
+            },
+            "metadata": {
+                "question": {
+                    "text": "Are LABAs used in combination with ICSs?",
+                    "options": [
+                        "Yes",
+                        "No"
+                    ]
+                }
+            }
+        },
+        {
+            "id": "outcome_positive",
+            "type": "outcome",
+            "label": "Positive Outcome",
+            "description": "LABAs are used in combination with ICSs for better asthma control.",
+            "origin": "use_with_ics",
+            "output_type": null,
+            "output_map": {},
+            "condition": {},
+            "metadata": {}
+        },
+        {
+            "id": "outcome_negative",
+            "type": "outcome",
+            "label": "Negative Outcome",
+            "description": "LABAs are not used alone and carry risks if used alone.",
+            "origin": "use_with_ics",
+            "output_type": null,
+            "output_map": {},
+            "metadata": {}
+        }
+    ],
+    "edges": [
+        {
+            "source_id": "root",
+            "target_id": "use_with_ics",
+            "label": "Start"
+        },
+        {
+            "source_id": "use_with_ics",
+            "target_id": "outcome_positive",
+            "label": "Yes"
+        },
+        {
+            "source_id": "use_with_ics",
+            "target_id": "outcome_negative",
+            "label": "No"
+        }
+    ]
+}

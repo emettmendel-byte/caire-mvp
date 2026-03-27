@@ -1,0 +1,92 @@
+{
+    "valid": false,
+    "issues": [
+        "Loop detected: node_2 -> node_4 -> node_2 (via recursive_content criteria)",
+        "Missing 'no' branch for root node",
+        "Missing 'no' branch for node_2",
+        "Missing 'no' branch for node_4",
+        "Missing 'no' branch for node_5"
+    ],
+    "simulations": [
+        {
+            "path": [
+                "root-yes",
+                "node_2-yes",
+                "node_4-yes"
+            ],
+            "outcome": "refer"
+        },
+        {
+            "path": [
+                "root-yes",
+                "node_2-yes",
+                "node_4-no"
+            ],
+            "outcome": "refer"
+        },
+        {
+            "path": [
+                "root-yes",
+                "node_2-no",
+                "node_5"
+            ],
+            "outcome": "refer"
+        }
+    ],
+    "fixed_tree": {
+        "root": {
+            "name": "Initial Master Assessment",
+            "type": "question",
+            "criteria": "symptom list",
+            "yes": {
+                "$ref": "#node_2"
+            },
+            "no": {
+                "$ref": "#node_3"
+            },
+            "action": "refer"
+        },
+        "nodes": {
+            "node_2": {
+                "type": "recursive_content",
+                "criteria": "fever and cough",
+                "yes": {
+                    "$ref": "#node_4"
+                },
+                "no": {
+                    "$ref": "#node_5"
+                }
+            },
+            "node_3": {
+                "type": "question",
+                "criteria": "other symptoms",
+                "yes": {
+                    "$ref": "#node_6"
+                },
+                "no": {
+                    "$ref": "#node_7"
+                }
+            },
+            "node_4": {
+                "type": "question",
+                "criteria": "high fever",
+                "yes": {
+                    "$ref": "node_8"
+                },
+                "no": {
+                    "$ref": "node_9"
+                }
+            },
+            "node_5": {
+                "type": "question",
+                "criteria": "cough severity",
+                "yes": {
+                    "$ref": "node_10"
+                },
+                "no": {
+                    "$ref": "node_11"
+                }
+            }
+        }
+    }
+}
