@@ -13,6 +13,10 @@ export default defineConfig({
       '/artifacts': {
         target: 'http://localhost:4001',
         changeOrigin: true
+      },
+      '/pdf': {
+        target: 'http://localhost:4001',
+        changeOrigin: true
       }
     }
   }

@@ -1,0 +1,158 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "CAIRE Clinical Decision Tree Specification",
+  "description": "The canonical JSON format for clinical guidelines parsed by Caire. Compatible with the CAIRE ReactFlow frontend.",
+  "type": "object",
+  "required": [
+    "id",
+    "version",
+    "name",
+    "description",
+    "root_id",
+    "nodes",
+    "edges"
+  ],
+  "properties": {
+    "id": {
+      "type": "string",
+      "description": "Unique kebab-case slug for the guideline artifact."
+    },
+    "version": {
+      "type": "string",
+      "description": "Semantic version of the guideline algorithm."
+    },
+    "name": {
+      "type": "string",
+      "description": "Human-readable clinical title of the guideline."
+    },
+    "description": {
+      "type": "string",
+      "description": "A one-sentence summary of the guideline scope."
+    },
+    "root_id": {
+      "type": "string",
+      "description": "The ID of the starting node (usually 'root')."
+    },
+    "nodes": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "id",
+          "type",
+          "label",
+          "description"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Short snake_case identifier."
+          },
+          "type": {
+            "type": "string",
+            "enum": [
+              "root",
+              "question",
+              "outcome"
+            ]
+          },
+          "label": {
+            "type": "string",
+            "maxLength": 60,
+            "description": "Human-readable node label or question."
+          },
+          "description": {
+            "type": "string",
+            "description": "Clinical context or specific instructions for this node."
+          },
+          "origin": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "The ID of the parent node."
+          },
+          "output_type": {
+            "type": "string",
+            "enum": [
+              "string",
+              "number",
+              "boolean"
+            ]
+          },
+          "output_map": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "string"
+            },
+            "description": "Maps possible answers to the next node ID."
+          },
+          "condition": {
+            "type": "object",
+            "properties": {
+              "variable": {
+                "type": "string"
+              },
+              "operator": {
+                "type": "string"
+              },
+              "threshold": {
+                "type": "string"
+              }
+            }
+          },
+          "metadata": {
+            "type": "object",
+            "properties": {
+              "question": {
+                "type": "object",
+                "properties": {
+                  "value_type": {
+                    "type": "string"
+                  },
+                  "unit": {
+                    "type": "string"
+                  },
+                  "threshold": {
+                    "type": "number"
+                  },
+                  "options": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "edges": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "source_id",
+          "target_id",
+          "label"
+        ],
+        "properties": {
+          "source_id": {
+            "type": "string",
+            "description": "ID of the source node."
+          },
+          "target_id": {
+            "type": "string",
+            "description": "ID of the next destination node."
+          },
+          "label": {
+            "type": "string",
+            "description": "The answer or criteria that triggers this path (e.g. 'Yes')."
+          }
+        }
+      }
+    }
+  }
+}

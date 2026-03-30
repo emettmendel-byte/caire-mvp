@@ -4,10 +4,9 @@ from fastapi.responses import FileResponse
 from pydantic import BaseModel
 import os
 import uuid
-import uuid
-from typing import Dict, Any, List
+from typing import Dict, Any, List, Optional
 from .models import PromptUpdate, PipelineStatusResponse, GraphState
-from .pipeline.prompts import load_prompts, update_prompt
+from .pipeline.prompts import load_prompt_library, update_prompt, _save_library, get_pipeline_recipe
 from .pipeline.langgraph_workflow import graph
 
 app = FastAPI(title="Clinical Guideline Parsing Pipeline")
@@ -34,7 +33,7 @@ def serve_index():
 
 @app.get("/api/prompts")
 def get_prompts():
-    return load_prompts()
+    return load_prompt_library()["prompts"]
 
 @app.put("/api/prompts")
 def update_prompts(prompt: PromptUpdate):
@@ -43,6 +42,61 @@ def update_prompts(prompt: PromptUpdate):
         return {"status": "success"}
     except KeyError as e:
         raise HTTPException(status_code=404, detail=str(e))
+
+@app.get("/api/prompt-bank")
+def get_prompt_bank():
+    return load_prompt_library()["prompts"]
+
+class PromptBankItem(BaseModel):
+    id: str
+    name: str
+    text: str
+
+@app.post("/api/prompt-bank")
+def save_to_prompt_bank(item: PromptBankItem):
+    lib = load_prompt_library()
+    lib["prompts"][item.id] = {"id": item.id, "name": item.name, "text": item.text}
+    _save_library(lib)
+    return {"status": "saved", "id": item.id}
+
+@app.delete("/api/prompt-bank/{prompt_id}")
+def delete_from_prompt_bank(prompt_id: str):
+    lib = load_prompt_library()
+    if prompt_id not in lib["prompts"]:
+        raise HTTPException(status_code=404, detail="Prompt not found")
+    del lib["prompts"][prompt_id]
+    _save_library(lib)
+    return {"status": "deleted"}
+
+@app.get("/api/pipelines")
+def get_pipelines():
+    return load_prompt_library()["pipelines"]
+
+class PipelineRecipe(BaseModel):
+    id: str
+    name: str
+    description: str = ""
+    steps: Dict[str, str]
+
+@app.post("/api/pipelines")
+def save_pipeline(recipe: PipelineRecipe):
+    lib = load_prompt_library()
+    # Replace if exists, else append
+    pipelines = lib.get("pipelines", [])
+    pipelines = [p for p in pipelines if p["id"] != recipe.id]
+    pipelines.append(recipe.dict())
+    lib["pipelines"] = pipelines
+    _save_library(lib)
+    return {"status": "saved", "id": recipe.id}
+
+@app.delete("/api/pipelines/{pipeline_id}")
+def delete_pipeline(pipeline_id: str):
+    if pipeline_id == "default-governance":
+        raise HTTPException(status_code=400, detail="Cannot delete the default pipeline")
+    lib = load_prompt_library()
+    lib["pipelines"] = [p for p in lib["pipelines"] if p["id"] != pipeline_id]
+    _save_library(lib)
+    return {"status": "deleted"}
 
 @app.get("/api/status/{run_id}", response_model=PipelineStatusResponse)
 def get_status(run_id: str):
@@ -95,35 +149,38 @@ def list_pdfs():
     out.sort(key=lambda x: x["date"], reverse=True)
     return out
 
-async def run_pipeline_task(run_id: str, file_name: str, extracted_text: str):
-    """Background task to run the LangGraph workflow."""
+from .pipeline.dynamic_workflow import dynamic_graph
+from .pipeline.prompts import get_pipeline_recipe
+
+async def run_pipeline_task(run_id: str, file_name: str, extracted_text: str, pipeline_id: str = "default-governance"):
+    """Background task to run the dynamic LangGraph workflow."""
+    # Fetch the actual steps for this pipeline
+    recipe = get_pipeline_recipe(pipeline_id)
+    steps = recipe.get("steps", []) if recipe else []
     
-    # Initialize the state map
     initial_state = GraphState(
         run_id=run_id,
+        pipeline_id=pipeline_id,
         file_name=file_name,
         pdf_text=extracted_text,
-        extracted_data=None,
-        chunks=None,
-        decisions=None,
-        tree_draft=None,
-        validation_status=None,
-        final_json=None,
-        current_chunk_index=0,
-        chunk_decisions=[],
-        chunk_subtrees=[],
+        pipeline_steps=steps,
+        step_index=0,
+        manual_repairs=None,
+        red_team_report=None,
+        resolved_manual=None,
+        factsheet_csv=None,
+        symbols_predicates=None,
+        factsheet_json=None,
+        validation_retries=0,
         current_step="started",
         completed_steps=[],
-        artifacts=[],
-        validation_retries=0
+        artifacts=[]
     )
     
     runs_db[run_id].status = "running"
     
     try:
-        # We need an async iterator to get updates, or we can use graph.ainvoke / astream
-        # .astream() yields events with state updates as they happen
-        async for event in graph.astream(initial_state):
+        async for event in dynamic_graph.astream(initial_state):
             # event is a dict containing the node name and its output
             # For example: {"extract_text": {"extracted_data": ...}}
             for node_name, updates in event.items():
@@ -137,9 +194,11 @@ async def run_pipeline_task(run_id: str, file_name: str, extracted_text: str):
         runs_db[run_id].current_step = "done"
 
     except Exception as e:
-        print(f"Exception during pipeline {run_id}: {e}")
+        last_step = runs_db[run_id].current_step or "unknown"
+        error_msg = f"[Failure at Step: {last_step}] - {str(e)}"
+        print(f"Exception during pipeline {run_id}: {error_msg}")
         runs_db[run_id].status = "failed"
-        runs_db[run_id].current_step = str(e)
+        runs_db[run_id].current_step = error_msg
 
 
 def _extract_text_from_pdf(pdf_path: str) -> str:
@@ -155,17 +214,19 @@ def _extract_text_from_pdf(pdf_path: str) -> str:
         raise Exception(f"Failed to extract PDF text: {e}")
 
 @app.post("/api/upload")
-async def upload_pdf(background_tasks: BackgroundTasks, file: UploadFile = File(...)):
+async def upload_pdf(
+    background_tasks: BackgroundTasks,
+    file: UploadFile = File(...),
+    pipeline_id: str = "default-governance"
+):
     if not file.filename.endswith(".pdf"):
         raise HTTPException(status_code=400, detail="Must be a PDF file")
 
-    # Read and save the file
     contents = await file.read()
     pdf_path = os.path.join(UPLOADS_DIR, file.filename)
     with open(pdf_path, "wb") as f:
         f.write(contents)
     
-    # Extract text
     try:
         extracted_text = _extract_text_from_pdf(pdf_path)
     except Exception as e:
@@ -175,23 +236,25 @@ async def upload_pdf(background_tasks: BackgroundTasks, file: UploadFile = File(
     runs_db[run_id] = PipelineStatusResponse(
         run_id=run_id,
         status="pending",
+        pipeline_id=pipeline_id,
         current_step="PDF Uploaded",
         completed_steps=[],
         artifacts=[]
     )
     
-    # Start LangGraph processing in background
-    background_tasks.add_task(run_pipeline_task, run_id, file.filename, extracted_text)
-    
+    background_tasks.add_task(run_pipeline_task, run_id, file.filename, extracted_text, pipeline_id)
     return {"run_id": run_id, "status": "Pipeline queued"}
 
 @app.post("/api/reprocess/{filename}")
-async def reprocess_pdf(filename: str, background_tasks: BackgroundTasks):
+async def reprocess_pdf(
+    filename: str,
+    background_tasks: BackgroundTasks,
+    pipeline_id: str = "default-governance"
+):
     pdf_path = os.path.join(UPLOADS_DIR, filename)
     if not os.path.exists(pdf_path):
         raise HTTPException(status_code=404, detail="PDF not found")
         
-    # Extract text
     try:
         extracted_text = _extract_text_from_pdf(pdf_path)
     except Exception as e:
@@ -201,13 +264,15 @@ async def reprocess_pdf(filename: str, background_tasks: BackgroundTasks):
     runs_db[run_id] = PipelineStatusResponse(
         run_id=run_id,
         status="pending",
+        pipeline_id=pipeline_id,
         current_step="Starting Reprocessing",
         completed_steps=[],
         artifacts=[]
     )
     
-    background_tasks.add_task(run_pipeline_task, run_id, filename, extracted_text)
+    background_tasks.add_task(run_pipeline_task, run_id, filename, extracted_text, pipeline_id)
     return {"run_id": run_id, "status": "Pipeline queued"}
+
 
 @app.delete("/api/library/{filename}")
 def delete_guideline(filename: str):

@@ -1,0 +1,76 @@
+{
+    "version": "1.0",
+    "artifacts": [
+        {
+            "name": "manual_repair",
+            "hash": "5df69d17ac948e54",
+            "version": "1.0",
+            "provenance": "Manual repair performed by clinician",
+            "signoffs": [
+                "Clinician Signoff: Manual repair completed"
+            ]
+        },
+        {
+            "name": "redteam_audit",
+            "hash": "82f24bbd6b5a ",
+            "version": "1.0",
+            "provenance": "Red team audit completed",
+            "signoffs": []
+        },
+        {
+            "name": "ResolvedManual",
+            "hash": "41f9d2be2f1af167",
+            "version": "1.0",
+            "provenance": "Resolved manual issue",
+            "signoffs": []
+        },
+        {
+            "name": "facts_extraction",
+            "hash": "c226f7abbfc65bb4",
+            "version": "1.0",
+            "provenance": "Facts extraction completed",
+            "signoffs": []
+        },
+        {
+            "name": "symbols_predicates",
+            "hash": "6d0ffae09305b749",
+            "version": "1.0",
+            "provenance": "Symbols and predicates defined",
+            "signoffs": []
+        },
+        {
+            "name": "factsheet_builder",
+            "hash": "a2bc79c23046752e",
+            "version": "1.0",
+            "provenance": "Factsheet builder tool",
+            "signoffs": []
+        },
+        {
+            "name": "validation_report",
+            "hash": "704373d2f5c11709",
+            "version": "1.0",
+            "provenance": "Validation report generated",
+            "signoffs": []
+        },
+        {
+            "name": "factsheet_validated",
+            "hash": "adec175289a3b897",
+            "version": "1.0",
+            "provenance": "Factsheet validated by validation process",
+            "signoffs": []
+        }
+    ],
+    "open_questions": [],
+    "validation_summary": {
+        "vulnerability": "ICSs are generally safe at prescribed doses.",
+        "severity": "Medium",
+        "description": "ICSs are generally safe at prescribed doses.",
+        "mitigation": "Use spacer device to minimize side effects.",
+        "affected_component": "ICSs",
+        "impact": "Side effects such as throat irritation and hoarseness can occur.",
+        "references": [
+            "Common side effects of ICSs include throat irritation and hoarseness.",
+            "Using a spacer device can minimize ICS side effects."
+        ]
+    }
+}

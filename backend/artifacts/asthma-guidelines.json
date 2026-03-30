@@ -1,189 +1,47 @@
 {
-    "id": "asthma-guidelines",
-    "version": "1.0.0",
+    "query": "Generate a JSON object containing the key insights from the document about asthma medications, including information on ICSs and LABAs, their usage, safety, and patient education.",
+    "response": {
+        "key_insights": {
+            "ics": {
+                "effectiveness": "ICSs are the most effective medications for long-term control of persistent asthma.",
+                "safety": {
+                    "side_effects": "Can cause mouth irritation or thrush (preventable by rinsing after use). Growth may slow slightly in children, but this is generally small and not progressive.",
+                    "pregnancy": "ICSs are safe for pregnant women when used to control asthma."
+                },
+                "usage": "Should be used at the lowest effective dose to maintain control, combined with proper technique (e.g., spacer devices)."
+            },
+            "labas": {
+                "combination_with_ics": "LABAs must be combined with an ICS for long-term asthma control and should never be used alone.",
+                "risks": {
+                    "severe_exacerbations": "LABAs increase the risk of severe asthma exacerbations, especially at higher doses.",
+                    "black_box_warning": "FDA issued a Black Box warning due to rare but serious risks (e.g., deaths in clinical trials for salmeterol)."
+                },
+                "dosage": "Daily use should not exceed 100 mcg salmeterol or 24 mcg formoterol.",
+                "usage": "Not recommended for acute symptoms or exacerbations."
+            },
+            "patient_education": {
+                "ics": "Explain that ICSs are preventive medications (not for quick relief). Emphasize daily use and lowest effective dose.",
+                "labas": "Highlight the need to combine them with ICSs and avoid monotherapy. Stress the importance of monitoring for worsening symptoms."
+            },
+            "educational_resources": {
+                "authoritative_sources": "Includes NHLBI guidelines (EPR-3), PACE program, NACI, Allergy & Asthma Network, CDC, EPA, etc."
+            }
+        },
+        "critical_considerations": {
+            "combination_therapy_mandate": "LABAs must always be paired with an ICS.",
+            "black_box_warnings": "LABAs carry a risk of severe exacerbations, necessitating careful patient selection and education.",
+            "growth_concerns": "While ICSs may slightly affect growth, the benefits of asthma control typically outweigh this risk.",
+            "patient_adherence": "Correct device use and adherence are critical for safety and efficacy."
+        },
+        "key_takeaways": {
+            "ics": "ICSs are safe and effective for long-term asthma control when used properly.",
+            "labas": "LABAs must be combined with ICSs and used cautiously due to risks.",
+            "overall": "Patient adherence and correct device use are critical for safety and efficacy. Resources are available for further guidance and support."
+        }
+    },
+    "nodes": [],
+    "edges": [],
     "name": "Asthma Guidelines",
-    "description": "Clinical guideline for asthma management.",
-    "root_id": "root",
-    "nodes": [
-        {
-            "id": "root",
-            "type": "root",
-            "label": "Start assessment",
-            "description": "Begin triage flow"
-        },
-        {
-            "id": "node1",
-            "type": "question",
-            "origin": "root",
-            "output_type": "string",
-            "output_map": {
-                "Under 18": "outcome1",
-                "18-30": "outcome2",
-                "31+": "outcome3"
-            },
-            "label": "What is your age?",
-            "description": "",
-            "condition": {
-                "variable": "entry_point",
-                "operator": "==",
-                "threshold": "start_assessment"
-            },
-            "metadata": {
-                "question": {
-                    "value_type": "number",
-                    "unit": "years",
-                    "threshold": 18,
-                    "options": [
-                        "Under 18",
-                        "18-30",
-                        "31+"
-                    ]
-                }
-            }
-        },
-        {
-            "id": "node2",
-            "type": "question",
-            "origin": "root",
-            "output_type": "string",
-            "output_map": {
-                "Student": "outcome4",
-                "Professional": "outcome5",
-                "Retired": "outcome6"
-            },
-            "label": "What is your occupation?",
-            "description": "",
-            "condition": {
-                "variable": "entry_point",
-                "operator": "==",
-                "threshold": "start_assessment"
-            },
-            "metadata": {
-                "question": {
-                    "value_type": "string",
-                    "unit": "",
-                    "threshold": 0,
-                    "options": [
-                        "Student",
-                        "Professional",
-                        "Retired"
-                    ]
-                }
-            }
-        },
-        {
-            "id": "outcome1",
-            "type": "outcome",
-            "origin": "node1",
-            "label": "Under 18",
-            "description": "",
-            "condition": {
-                "variable": "node1",
-                "operator": "==",
-                "threshold": "Under 18"
-            }
-        },
-        {
-            "id": "outcome2",
-            "type": "outcome",
-            "origin": "node1",
-            "label": "18-30",
-            "description": "",
-            "condition": {
-                "variable": "node1",
-                "operator": "==",
-                "threshold": "18-30"
-            }
-        },
-        {
-            "id": "outcome3",
-            "type": "outcome",
-            "origin": "node1",
-            "label": "31+",
-            "description": "",
-            "condition": {
-                "variable": "node1",
-                "operator": "==",
-                "threshold": "31+"
-            }
-        },
-        {
-            "id": "outcome4",
-            "type": "outcome",
-            "origin": "node2",
-            "label": "Student",
-            "description": "",
-            "condition": {
-                "variable": "node2",
-                "operator": "==",
-                "threshold": "Student"
-            }
-        },
-        {
-            "id": "outcome5",
-            "type": "outcome",
-            "origin": "node2",
-            "label": "Professional",
-            "description": "",
-            "condition": {
-                "variable": "node2",
-                "operator": "==",
-                "threshold": "Professional"
-            }
-        },
-        {
-            "id": "outcome6",
-            "type": "outcome",
-            "origin": "node2",
-            "label": "Retired",
-            "description": "",
-            "condition": {
-                "variable": "node2",
-                "operator": "==",
-                "threshold": "Retired"
-            }
-        }
-    ],
-    "edges": [
-        {
-            "source_id": "root",
-            "target_id": "node1",
-            "label": "Yes"
-        },
-        {
-            "source_id": "root",
-            "target_id": "node2",
-            "label": "No"
-        },
-        {
-            "source_id": "node1",
-            "target_id": "outcome1",
-            "label": "Under 18"
-        },
-        {
-            "source_id": "node1",
-            "target_id": "outcome2",
-            "label": "18-30"
-        },
-        {
-            "source_id": "node1",
-            "target_id": "outcome3",
-            "label": "31+"
-        },
-        {
-            "source_id": "node2",
-            "target_id": "outcome4",
-            "label": "Student"
-        },
-        {
-            "source_id": "node2",
-            "target_id": "outcome5",
-            "label": "Professional"
-        },
-        {
-            "source_id": "node2",
-            "target_id": "outcome6",
-            "label": "Retired"
-        }
-    ]
+    "id": "asthma-guidelines",
+    "root_id": "root"
 }

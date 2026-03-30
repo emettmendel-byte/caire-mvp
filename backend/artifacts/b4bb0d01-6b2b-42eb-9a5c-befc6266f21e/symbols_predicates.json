@@ -1,0 +1,505 @@
+{
+    "symbols": [
+        {
+            "vslug": "factid",
+            "type": "v",
+            "prefix": "v_"
+        },
+        {
+            "vslug": "category",
+            "type": "c",
+            "prefix": "c_"
+        },
+        {
+            "vslug": "symptom",
+            "type": "p",
+            "prefix": "p_"
+        },
+        {
+            "vslug": "action",
+            "type": "p",
+            "prefix": "p_"
+        },
+        {
+            "vslug": "drug",
+            "type": "p",
+            "prefix": "p_"
+        },
+        {
+            "vslug": "workflow",
+            "type": "p",
+            "prefix": "p_"
+        },
+        {
+            "vslug": "content",
+            "type": "v",
+            "prefix": "v_"
+        },
+        {
+            "vslug": "priorityweight",
+            "type": "v",
+            "prefix": "v_"
+        },
+        {
+            "vslug": "source",
+            "type": "v",
+            "prefix": "v_"
+        },
+        {
+            "vslug": "page",
+            "type": "v",
+            "prefix": "v_"
+        },
+        {
+            "vslug": "provenance",
+            "type": "v",
+            "prefix": "v_"
+        }
+    ],
+    "predicates": [
+        {
+            "pslug": "is_workflow",
+            "description": "This fact is about a workflow.",
+            "default": true,
+            "failsafevalue": true
+        },
+        {
+            "pslug": "is_clinical",
+            "description": "This fact is about clinical aspects.",
+            "default": true,
+            "failsafevalue": true
+        },
+        {
+            "pslug": "is_action",
+            "description": "This fact describes an action.",
+            "default": true,
+            "failsafevalue": true
+        },
+        {
+            "pslug": "is_drug",
+            "description": "This fact is about a drug.",
+            "default": true,
+            "failsafevalue": true
+        },
+        {
+            "pslug": "is_workflow",
+            "description": "This fact is about a workflow.",
+            "default": true,
+            "failsafevalue": true
+        },
+        {
+            "pslug": "is_workflow",
+            "description": "This fact is about a workflow.",
+            "default": true,
+            "failsafevalue": true
+        },
+        {
+            "pslug": "is_workflow",
+            "description": "This fact is about a workflow.",
+            "default": true,
+            "failsafevalue": true
+        },
+        {
+            "pslug": "is_workflow",
+            "description": "This fact is about a workflow.",
+            "default": true,
+            "failsafevalue": true
+        },
+        {
+            "pslug": "is_workflow",
+            "description": "This fact is about a workflow.",
+            "default": true,
+            "failsafevalue": true
+        },
+        {
+            "pslug": "is_workflow",
+            "description": "This fact is about a workflow.",
+            "default": true,
+            "failsafevalue": true
+        },
+        {
+            "pslug": "is_workflow",
+            "description": "This fact is about a workflow.",
+            "default": true,
+            "failsafevalue": true
+        },
+        {
+            "pslug": "is_workflow",
+            "description": "This fact is about a workflow.",
+            "default": true,
+            "failsafevalue": true
+        },
+        {
+            "pslug": "is_workflow",
+            "description": "This fact is about a workflow.",
+            "default": true,
+            "failsafevalue": true
+        },
+        {
+            "pslug": "is_workflow",
+            "description": "This fact is about a workflow.",
+            "default": true,
+            "failsafevalue": true
+        },
+        {
+            "pslug": "is_workflow",
+            "description": "This fact is about a workflow.",
+            "default": true,
+            "failsafevalue": true
+        },
+        {
+            "pslug": "is_workflow",
+            "description": "This fact is about a workflow.",
+            "default": true,
+            "failsafevalue": true
+        },
+        {
+            "pslug": "is_workflow",
+            "description": "This fact is about a workflow.",
+            "default": true,
+            "failsafevalue": true
+        },
+        {
+            "pslug": "is_workflow",
+            "description": "This fact is about a workflow.",
+            "default": true,
+            "failsafevalue": true
+        },
+        {
+            "pslug": "is_workflow",
+            "description": "This fact is about a workflow.",
+            "default": true,
+            "failsafevalue": true
+        },
+        {
+            "pslug": "is_workflow",
+            "description": "This fact is about a workflow.",
+            "default": true,
+            "failsafevalue": true
+        },
+        {
+            "pslug": "is_workflow",
+            "description": "This fact is about a workflow.",
+            "default": true,
+            "failsafevalue": true
+        },
+        {
+            "pslug": "is_workflow",
+            "description": "This fact is about a workflow.",
+            "default": true,
+            "failsafevalue": true
+        },
+        {
+            "pslug": "is_workflow",
+            "description": "This fact is about a workflow.",
+            "default": true,
+            "failsafevalue": true
+        },
+        {
+            "pslug": "is_workflow",
+            "description": "This fact is about a workflow.",
+            "default": true,
+            "failsafevalue": true
+        },
+        {
+            "pslug": "is_workflow",
+            "description": "This fact is about a workflow.",
+            "default": true,
+            "failsafevalue": true
+        },
+        {
+            "pslug": "is_workflow",
+            "description": "This fact is about a workflow.",
+            "default": true,
+            "failsafevalue": true
+        },
+        {
+            "pslug": "is_workflow",
+            "description": "This fact is about a workflow.",
+            "default": true,
+            "failsafevalue": true
+        },
+        {
+            "pslug": "is_workflow",
+            "description": "This fact is about a workflow.",
+            "default": true,
+            "failsafevalue": true
+        },
+        {
+            "pslug": "is_workflow",
+            "description": "This fact is about a workflow.",
+            "default": true,
+            "failsafevalue": true
+        },
+        {
+            "pslug": "is_workflow",
+            "description": "This fact is about a workflow.",
+            "default": true,
+            "failsafevalue": true
+        },
+        {
+            "pslug": "is_workflow",
+            "description": "This fact is about a workflow.",
+            "default": true,
+            "failsafevalue": true
+        },
+        {
+            "pslug": "is_workflow",
+            "description": "This fact is about a workflow.",
+            "default": true,
+            "failsafevalue": true
+        },
+        {
+            "pslug": "is_workflow",
+            "description": "This fact is about a workflow.",
+            "default": true,
+            "failsafevalue": true
+        },
+        {
+            "pslug": "is_workflow",
+            "description": "This fact is about a workflow.",
+            "default": true,
+            "failsafevalue": true
+        },
+        {
+            "pslug": "is_workflow",
+            "description": "This fact is about a workflow.",
+            "default": true,
+            "failsafevalue": true
+        },
+        {
+            "pslug": "is_workflow",
+            "description": "This fact is about a workflow.",
+            "default": true,
+            "failsafevalue": true
+        },
+        {
+            "pslug": "is_workflow",
+            "description": "This fact is about a workflow.",
+            "default": true,
+            "failsafevalue": true
+        },
+        {
+            "pslug": "is_workflow",
+            "description": "This fact is about a workflow.",
+            "default": true,
+            "failsafevalue": true
+        },
+        {
+            "pslug": "is_workflow",
+            "description": "This fact is about a workflow.",
+            "default": true,
+            "failsafevalue": true
+        },
+        {
+            "pslug": "is_workflow",
+            "description": "This fact is about a workflow.",
+            "default": true,
+            "failsafevalue": true
+        },
+        {
+            "pslug": "is_workflow",
+            "description": "This fact is about a workflow.",
+            "default": true,
+            "failsafevalue": true
+        },
+        {
+            "pslug": "is_workflow",
+            "description": "This fact is about a workflow.",
+            "default": true,
+            "failsafevalue": true
+        },
+        {
+            "pslug": "is_workflow",
+            "description": "This fact is about a workflow.",
+            "default": true,
+            "failsafevalue": true
+        },
+        {
+            "pslug": "is_workflow",
+            "description": "This fact is about a workflow.",
+            "default": true,
+            "failsafevalue": true
+        },
+        {
+            "pslug": "is_workflow",
+            "description": "This fact is about a workflow.",
+            "default": true,
+            "failsafevalue": true
+        },
+        {
+            "pslug": "is_workflow",
+            "description": "This fact is about a workflow.",
+            "default": true,
+            "failsafevalue": true
+        },
+        {
+            "pslug": "is_workflow",
+            "description": "This fact is about a workflow.",
+            "default": true,
+            "failsafevalue": true
+        },
+        {
+            "pslug": "is_workflow",
+            "description": "This fact is about a workflow.",
+            "default": true,
+            "failsafevalue": true
+        },
+        {
+            "pslug": "is_workflow",
+            "description": "This fact is about a workflow.",
+            "default": true,
+            "failsafevalue": true
+        },
+        {
+            "pslug": "is_workflow",
+            "description": "This fact is about a workflow.",
+            "default": true,
+            "failsafevalue": true
+        },
+        {
+            "pslug": "is_workflow",
+            "description": "This fact is about a workflow.",
+            "default": true,
+            "failsafevalue": true
+        },
+        {
+            "pslug": "is_workflow",
+            "description": "This fact is about a workflow.",
+            "default": true,
+            "failsafevalue": true
+        },
+        {
+            "pslug": "is_workflow",
+            "description": "This fact is about a workflow.",
+            "default": true,
+            "failsafevalue": true
+        },
+        {
+            "pslug": "is_workflow",
+            "description": "This fact is about a workflow.",
+            "default": true,
+            "failsafevalue": true
+        },
+        {
+            "pslug": "is_workflow",
+            "description": "This fact is about a workflow.",
+            "default": true,
+            "failsafevalue": true
+        },
+        {
+            "pslug": "is_workflow",
+            "description": "This fact is about a workflow.",
+            "default": true,
+            "failsafevalue": true
+        },
+        {
+            "pslug": "is_workflow",
+            "description": "This fact is about a workflow.",
+            "default": true,
+            "failsafevalue": true
+        },
+        {
+            "pslug": "is_workflow",
+            "description": "This fact is about a workflow.",
+            "default": true,
+            "failsafevalue": true
+        },
+        {
+            "pslug": "is_workflow",
+            "description": "This fact is about a workflow.",
+            "default": true,
+            "failsafevalue": true
+        },
+        {
+            "pslug": "is_workflow",
+            "description": "This fact is about a workflow.",
+            "default": true,
+            "failsafevalue": true
+        },
+        {
+            "pslug": "is_workflow",
+            "description": "This fact is about a workflow.",
+            "default": true,
+            "failsafevalue": true
+        },
+        {
+            "pslug": "is_workflow",
+            "description": "This fact is about a workflow.",
+            "default": true,
+            "failsafevalue": true
+        },
+        {
+            "pslug": "is_workflow",
+            "description": "This fact is about a workflow.",
+            "default": true,
+            "failsafevalue": true
+        },
+        {
+            "pslug": "is_workflow",
+            "description": "This fact is about a workflow.",
+            "default": true,
+            "failsafevalue": true
+        },
+        {
+            "pslug": "is_workflow",
+            "description": "This fact is about a workflow.",
+            "default": true,
+            "failsafevalue": true
+        },
+        {
+            "pslug": "is_workflow",
+            "description": "This fact is about a workflow.",
+            "default": true,
+            "failsafevalue": true
+        },
+        {
+            "pslug": "is_workflow",
+            "description": "This fact is about a workflow.",
+            "default": true,
+            "failsafevalue": true
+        },
+        {
+            "pslug": "is_workflow",
+            "description": "This fact is about a workflow.",
+            "default": true,
+            "failsafevalue": true
+        },
+        {
+            "pslug": "is_workflow",
+            "description": "This fact is about a workflow.",
+            "default": true,
+            "failsafevalue": true
+        },
+        {
+            "pslug": "is_workflow",
+            "description": "This fact is about a workflow.",
+            "default": true,
+            "failsafevalue": true
+        },
+        {
+            "pslug": "is_workflow",
+            "description": "This fact is about a workflow.",
+            "default": true,
+            "failsafevalue": true
+        },
+        {
+            "pslug": "is_workflow",
+            "description": "This fact is about a workflow.",
+            "default": true,
+            "failsafevalue": true
+        },
+        {
+            "pslug": "is_workflow",
+            "description": "This fact is about a workflow.",
+            "default": true,
+            "failsafevalue": true
+        },
+        {
+            "pslug": "is_workflow",
+            "description": "This fact is about a workflow.",
+            "default": true,
+            "failsafevalue": true
+        }
+    ]
+}

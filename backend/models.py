@@ -11,6 +11,7 @@ class PromptUpdate(BaseModel):
 class PipelineStatusResponse(BaseModel):
     run_id: str
     status: str
+    pipeline_id: Optional[str] = "default-governance"
     current_step: Optional[str] = None
     completed_steps: List[str] = []
     artifacts: List[Dict[str, Any]] = []
@@ -18,21 +19,28 @@ class PipelineStatusResponse(BaseModel):
 # LangGraph state representation
 class GraphState(TypedDict):
     run_id: str
+    pipeline_id: str
     file_name: str
     pdf_text: str
-    # Results from each node
-    extracted_data: Optional[Dict[str, Any]]
-    chunks: Optional[List[Dict[str, Any]]]
-    decisions: Optional[Dict[str, Any]]
-    tree_draft: Optional[Dict[str, Any]]
-    validation_status: Optional[Dict[str, Any]]
-    final_json: Optional[Dict[str, Any]]
     
-    current_chunk_index: int
-    chunk_decisions: List[Dict[str, Any]]
-    chunk_subtrees: List[Dict[str, Any]]
+    # ── Dynamic Execution Data ──
+    # The list of prompt IDs to run, from the recipe
+    pipeline_steps: List[Dict[str, Any]] 
+    # The index of the current step being executed
+    step_index: int
+    
+    # ── Phase A: Audit & Repair (Legacy support or for specific nodes) ──
+    manual_repairs: Optional[str]
+    red_team_report: Optional[str]
+    resolved_manual: Optional[str]
+    
+    # ── Phase B: Structuring (Legacy support) ──
+    factsheet_csv: Optional[str]
+    symbols_predicates: Optional[Dict[str, Any]]
+    factsheet_json: Optional[Dict[str, Any]]
     
     current_step: str
     completed_steps: Annotated[List[str], operator.add]
+    # All artifacts generated across the entire pipeline
     artifacts: Annotated[List[Dict[str, Any]], operator.add]
     validation_retries: int

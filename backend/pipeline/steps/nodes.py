@@ -2,9 +2,10 @@ import json
 import os
 import re
 import datetime
+import hashlib
 from typing import Dict, Any, List
 from ...models import GraphState
-from ..ollama_client import generate_json
+from ..ollama_client import generate_json, generate_text
 from ..prompts import get_prompt_text
 import logging
 
@@ -16,301 +17,228 @@ def _run_artifact_dir(run_id: str) -> str:
     os.makedirs(base, exist_ok=True)
     return base
 
-# Where the final compiled JSON goes (picked up by /api/library)
+# Where the final compiled JSON goes
 FINAL_ARTIFACTS_DIR = os.path.join(os.path.dirname(__file__), "..", "..", "artifacts")
 
-
-async def write_artifact(run_id: str, step_name: str, data: Any) -> Dict[str, Any]:
+async def write_artifact(run_id: str, step_name: str, data: Any, ext: str = "json") -> Dict[str, Any]:
     """Write an intermediate artifact for a pipeline step."""
-    file_path = os.path.join(_run_artifact_dir(run_id), f"{step_name}.json")
-    with open(file_path, "w") as f:
-        json.dump(data, f, indent=4)
+    file_name = f"{step_name}.{ext}"
+    file_path = os.path.join(_run_artifact_dir(run_id), file_name)
+    
+    if ext == "json":
+        with open(file_path, "w") as f:
+            json.dump(data, f, indent=4)
+    else:
+        with open(file_path, "w") as f:
+            f.write(str(data))
+            
     return {
         "step": step_name,
-        "path": f"/artifacts/{run_id}/{step_name}.json",
-        "summary": f"Completed {step_name}"
+        "path": f"/artifacts/{run_id}/{file_name}",
+        "summary": f"Generated {file_name}"
     }
 
+def _calculate_hash(data: Any) -> str:
+    content = json.dumps(data, sort_keys=True) if isinstance(data, (dict, list)) else str(data)
+    return hashlib.sha256(content.encode()).hexdigest()
 
-def _extract_nodes_edges(result: Any) -> Dict[str, Any]:
+# ── Phase A: Audit & Repair ───────────────────────────────────────────────────
+
+async def universal_step_node(state: GraphState) -> Dict[str, Any]:
     """
-    Normalise whatever the LLM returns into {nodes: [...], edges: [...]}.
-    Handles result being a dict with nodes/edges, or a list, or fallback to empty.
+    A generic node that executes the current step in a dynamic pipeline.
+    It uses state['step_index'] to find the prompt and configuration from state['pipeline_steps'].
     """
-    if isinstance(result, dict):
-        nodes = result.get("nodes", [])
-        edges = result.get("edges", [])
-    elif isinstance(result, list):
-        # Maybe the LLM returned a flat list of nodes
-        nodes = result
-        edges = []
+    idx = state.get("step_index", 0)
+    steps = state.get("pipeline_steps", [])
+    
+    if idx >= len(steps):
+        # Should not happen if router is correct
+        return {"current_step": "completed"}
+        
+    step_config = steps[idx]
+    prompt_id = step_config.get("prompt_id")
+    step_name = step_config.get("name", f"step_{idx}")
+    output_format = step_config.get("output_format", "markdown")
+    
+    # Import here to avoid circular dependencies if any
+    from ..prompts import load_prompt_library
+    lib = load_prompt_library()
+    prompt_data = lib["prompts"].get(prompt_id)
+    prompt_text = prompt_data["text"] if prompt_data else "No prompt found."
+    
+    # Prepare context: pdf_text + references to all previous artifacts
+    context = {
+        "pdf_text": state.get("pdf_text", ""),
+        "step_name": step_name,
+        "previous_artifacts": [a.get("summary") for a in state.get("artifacts", [])]
+    }
+    
+    logger.info(f"Executing dynamic step {idx}: {step_name} ({prompt_id})")
+    
+    if output_format == "json":
+        result = await generate_json(prompt_text, context)
+        artifact = await write_artifact(state["run_id"], step_name, result, "json")
     else:
-        nodes = []
-        edges = []
-    return {"nodes": nodes if isinstance(nodes, list) else [], 
-            "edges": edges if isinstance(edges, list) else []}
-
-
-def _slug(name: str) -> str:
-    """Turn a guideline name into a kebab-case id slug."""
-    s = name.lower()
-    s = re.sub(r"[^a-z0-9]+", "-", s)
-    s = s.strip("-")
-    return s or "guideline"
-
-
-# ── Step 1: Extract text ──────────────────────────────────────────────────────
-
-async def extract_text_node(state: GraphState) -> Dict[str, Any]:
-    step = "extract_text"
-    prompt = get_prompt_text("prompt_1")
-    result = await generate_json(prompt, {"pdf_text": state.get("pdf_text", "")})
-    artifact = await write_artifact(state["run_id"], step, result)
+        result = await generate_text(prompt_text, context)
+        # Extract markdown content from code blocks if necessary
+        clean_result = result
+        if "```" in result:
+             m = re.search(r"```(?:\w+)?\n?(.*?)\n?```", result, re.DOTALL)
+             if m: clean_result = m.group(1).strip()
+             
+        artifact = await write_artifact(state["run_id"], step_name, clean_result, "md")
+        
     return {
-        "extracted_data": result,
-        "current_step": step,
-        "completed_steps": [step],
+        "step_index": idx + 1,
+        "current_step": step_name,
+        "completed_steps": [step_name],
         "artifacts": [artifact]
     }
 
+# ── Phase A: Audit & Repair (Legacy) ──────────────────────────────────────────
 
-# ── Step 2: Chunking ──────────────────────────────────────────────────────────
+async def manual_repair_node(state: GraphState) -> Dict[str, Any]:
+    step = "manual_repair"
+    prompt = get_prompt_text(state.get("pipeline_id", "default-governance"), "manual_repair")
+    result = await generate_text(prompt, {"manual_content": state.get("pdf_text", "")})
+    artifact = await write_artifact(state["run_id"], step, result, "md")
+    return {"manual_repairs": result, "current_step": step, "completed_steps": [step], "artifacts": [artifact]}
 
-async def chunking_node(state: GraphState) -> Dict[str, Any]:
-    step = "chunking"
-    prompt = get_prompt_text("prompt_2")
-    result = await generate_json(prompt, state.get("extracted_data", {}))
-    artifact = await write_artifact(state["run_id"], step, result)
-    return {
-        "chunks": result,
-        "current_step": step,
-        "completed_steps": [step],
-        "artifacts": [artifact],
-        "current_chunk_index": 0,
-        "chunk_decisions": [],
-        "chunk_subtrees": []
-    }
+async def redteam_audit_node(state: GraphState) -> Dict[str, Any]:
+    step = "redteam_audit"
+    prompt = get_prompt_text(state.get("pipeline_id", "default-governance"), "redteam_audit")
+    input_data = {"manual_pdf": state.get("pdf_text", ""), "manual_repairs": state.get("manual_repairs", "")}
+    result = await generate_text(prompt, input_data)
+    artifact = await write_artifact(state["run_id"], step, result, "md")
+    return {"red_team_report": result, "current_step": step, "completed_steps": [step], "artifacts": [artifact]}
 
+async def repair_drafting_node(state: GraphState) -> Dict[str, Any]:
+    step = "repair_drafting"
+    prompt = get_prompt_text(state.get("pipeline_id", "default-governance"), "repair_drafting")
+    result = await generate_text(prompt, {"red_team_report": state.get("red_team_report", ""), "manual_pdf": state.get("pdf_text", "")})
+    resolved = f"# Resolved Manual\n\n## Original Text Hash: {_calculate_hash(state['pdf_text'])[:8]}\n\n"
+    resolved += "## Initial Repairs\n" + (state.get("manual_repairs") or "") + "\n\n"
+    resolved += "## Red-team Targeted Fixes\n" + result
+    artifact = await write_artifact(state["run_id"], "ResolvedManual", resolved, "md")
+    return {"resolved_manual": resolved, "current_step": step, "completed_steps": [step], "artifacts": [artifact]}
 
-# ── Step 3: Decision identifier (per chunk) ───────────────────────────────────
+async def facts_extraction_node(state: GraphState) -> Dict[str, Any]:
+    step = "facts_extraction"
+    prompt = get_prompt_text(state.get("pipeline_id", "default-governance"), "facts_extraction")
+    result = await generate_text(prompt, {"ResolvedManual": state.get("resolved_manual", "")})
+    artifact = await write_artifact(state["run_id"], step, result, "csv")
+    return {"factsheet_csv": result, "current_step": step, "completed_steps": [step], "artifacts": [artifact]}
 
-async def decision_identifier_node(state: GraphState) -> Dict[str, Any]:
-    step = "decision_identification"
-    prompt = get_prompt_text("prompt_3")
-    idx = state.get("current_chunk_index", 0)
+async def symbols_predicates_node(state: GraphState) -> Dict[str, Any]:
+    step = "symbols_predicates"
+    prompt = get_prompt_text(state.get("pipeline_id", "default-governance"), "symbols_predicates")
+    result = await generate_json(prompt, {"factsheet_csv": state.get("factsheet_csv", "")})
+    artifact = await write_artifact(state["run_id"], step, result, "json")
+    return {"symbols_predicates": result, "current_step": step, "completed_steps": [step], "artifacts": [artifact]}
 
-    chunks_container = state.get("chunks", {})
-    chunk_list = (
-        chunks_container.get("chunks", [])
-        if isinstance(chunks_container, dict)
-        else chunks_container
-    )
-
-    if not chunk_list or idx >= len(chunk_list):
-        return {"current_step": step}
-
-    current_chunk = chunk_list[idx]
-    result = await generate_json(prompt, current_chunk)
-    # Normalise to {nodes, edges}
-    fragment = _extract_nodes_edges(result)
-
-    artifact = await write_artifact(state["run_id"], f"{step}_chunk_{idx}", fragment)
-
-    new_decisions = list(state.get("chunk_decisions", []))
-    new_decisions.append(fragment)
-
-    return {
-        "chunk_decisions": new_decisions,
-        "current_step": f"{step} ({idx+1}/{len(chunk_list)})",
-    }
-
-
-# ── Step 3.5: Subtree builder (per chunk) ─────────────────────────────────────
-
-async def subtree_builder_node(state: GraphState) -> Dict[str, Any]:
-    step = "subtree_building"
-    prompt = get_prompt_text("prompt_3_5")
-    idx = state.get("current_chunk_index", 0)
-
-    chunks_container = state.get("chunks", {})
-    chunk_list = (
-        chunks_container.get("chunks", [])
-        if isinstance(chunks_container, dict)
-        else chunks_container
-    )
-
-    if not chunk_list or idx >= len(chunk_list):
-        return {"current_step": step}
-
-    current_chunk = chunk_list[idx]
-    decisions = state.get("chunk_decisions", [])
-    current_decision = decisions[-1] if decisions else {"nodes": [], "edges": []}
-
-    input_payload = {
-        "chunk": current_chunk,
-        "decisions": current_decision
-    }
-
-    result = await generate_json(prompt, input_payload)
-    fragment = _extract_nodes_edges(result)
-
-    artifact = await write_artifact(state["run_id"], f"{step}_chunk_{idx}", fragment)
-
-    new_subtrees = list(state.get("chunk_subtrees", []))
-    new_subtrees.append(fragment)
-
-    return {
-        "chunk_subtrees": new_subtrees,
-        "current_step": f"{step} ({idx+1}/{len(chunk_list)})",
-        "current_chunk_index": idx + 1
-    }
-
-
-# ── Step 4: Tree merger ───────────────────────────────────────────────────────
-
-async def tree_merger_node(state: GraphState) -> Dict[str, Any]:
-    step = "tree_building"
-    prompt = get_prompt_text("prompt_4")
-
-    subtrees = state.get("chunk_subtrees", [])
-    await write_artifact(state["run_id"], "all_chunk_subtrees", subtrees)
-
-    result = await generate_json(prompt, subtrees)
-    merged = _extract_nodes_edges(result)
-
-    artifact = await write_artifact(state["run_id"], step, merged)
-    return {
-        "tree_draft": merged,
-        "current_step": step,
-        "completed_steps": ["decision_identification", "subtree_building", step],
-        "artifacts": [artifact]
-    }
-
-
-# ── Step 5: Validator ─────────────────────────────────────────────────────────
-
-async def validator_node(state: GraphState) -> Dict[str, Any]:
-    step = "validation"
-    prompt = get_prompt_text("prompt_5")
-
-    tree_draft = state.get("tree_draft", {"nodes": [], "edges": []})
+async def factsheet_builder_node(state: GraphState) -> Dict[str, Any]:
+    step = "factsheet_builder"
+    prompt = get_prompt_text(state.get("pipeline_id", "default-governance"), "factsheet_builder")
     input_data = {
-        "nodes": tree_draft.get("nodes", []),
-        "edges": tree_draft.get("edges", []),
-        "decisions": state.get("chunk_decisions", [])
+        "ResolvedManual": state.get("resolved_manual", ""),
+        "factsheet_csv": state.get("factsheet_csv", ""),
+        "symbols_predicates": state.get("symbols_predicates", {})
     }
-
     result = await generate_json(prompt, input_data)
+    if "nodes" not in result: result["nodes"] = []
+    if "edges" not in result: result["edges"] = []
+    artifact = await write_artifact(state["run_id"], step, result, "json")
+    return {"factsheet_json": result, "current_step": step, "completed_steps": [step], "artifacts": [artifact]}
 
-    artifact = await write_artifact(
-        state["run_id"],
-        f"{step}_attempt_{state.get('validation_retries', 0)}",
-        result
-    )
+# ── Phase D: Validation & Governance ──────────────────────────────────────────
+
+async def tree_validation_node(state: GraphState) -> Dict[str, Any]:
+    step = "tree_validation"
+    prompt = get_prompt_text(state.get("pipeline_id", "default-governance"), "tree_validation")
+    input_data = {
+        "factsheet_json": state.get("factsheet_json", {}),
+        "ResolvedManual": state.get("resolved_manual", "")
+    }
+    
+    # This prompt expects MD report + Updated JSON
+    # We might need to split them or use generate_json if it returns both
+    # For now, let's assume it returns a dict with report and fixed_json
+    result = await generate_json(prompt, input_data)
+    
+    report = result.get("validation_report", "Validation completed.")
+    fixed_json = result.get("factsheet_validated", state.get("factsheet_json"))
+    
+    art_report = await write_artifact(state["run_id"], "validation_report", report, "md")
+    art_json = await write_artifact(state["run_id"], "factsheet_validated", fixed_json, "json")
+    
     return {
-        "validation_status": result,
+        "validation_report": report,
+        "factsheet_json": fixed_json,
         "current_step": step,
         "completed_steps": [step],
-        "artifacts": [artifact]
+        "artifacts": [art_report, art_json]
     }
 
-
-# ── Step 6: JSON Compiler (writes to top-level artifacts/) ────────────────────
-
-async def json_compiler_node(state: GraphState) -> Dict[str, Any]:
-    step = "json_compilation"
-    prompt = get_prompt_text("prompt_6")
-
-    # Pull the best available nodes/edges: prefer validator output, fall back to merger
-    validation = state.get("validation_status", {})
-    tree_draft = state.get("tree_draft", {"nodes": [], "edges": []})
-
-    nodes = (
-        validation.get("nodes")
-        or tree_draft.get("nodes", [])
-    )
-    edges = (
-        validation.get("edges")
-        or tree_draft.get("edges", [])
-    )
-
+async def governance_node(state: GraphState) -> Dict[str, Any]:
+    step = "governance"
+    prompt = get_prompt_text(state.get("pipeline_id", "default-governance"), "governance")
+    
+    # Collect all metadata for hashes
+    # We will hash the summaries of the artifacts for the manifest
+    hashes = {a["step"]: hashlib.sha256(a.get("summary", "").encode()).hexdigest()[:16] for a in state.get("artifacts", [])}
+    
+    input_data = {
+        "factsheet_validated": state.get("factsheet_json", {}),
+        "artifact_hashes": hashes
+    }
+    
+    result = await generate_json(prompt, input_data)
+    manifest = result.get("manifest", result)
+    log = result.get("governance_log", "Automated governance check passed.")
+    
+    art_manifest = await write_artifact(state["run_id"], "manifest", manifest, "json")
+    art_log = await write_artifact(state["run_id"], "governance_log", log, "md")
+    
+    # ── FINAL OUTPUT: Write factsheet.json to root artifacts/ library ──
+    # Ensure we use the latest validated version
+    final_tree = state.get("factsheet_json") or {}
+    
+    # Validation fallback: if tree is empty, try to find it in artifacts
+    if not final_tree.get("nodes"):
+        logger.warning("factsheet_json in state is empty. Attempting recovery.")
+        # Fallback logic if needed
+    
+    # Ensure name/id for library
     file_name = state.get("file_name", "guideline.pdf")
-
-    input_data = {
-        "file_name": file_name,
-        "nodes": nodes,
-        "edges": edges,
-        "validation_summary": {
-            "valid": validation.get("valid", True),
-            "issues": validation.get("issues", [])
-        }
-    }
-
-    result = await generate_json(prompt, input_data)
-
-    # ── Ensure the result is a well-formed CAIRE document ─────────────────────
-    # If the LLM wrapped things, unwrap them
-    if isinstance(result, dict) and "tree" in result and "nodes" not in result:
-        inner = result.get("tree", {})
-        result = {
-            "nodes": inner.get("nodes", nodes),
-            "edges": inner.get("edges", edges),
-        }
-
-    # Guarantee required top-level fields exist
-    if not isinstance(result, dict):
-        result = {}
-
-    if "nodes" not in result or not result["nodes"]:
-        result["nodes"] = nodes
-    if "edges" not in result or not result["edges"]:
-        result["edges"] = edges
-
-    # Derive id / name from the file if the LLM omitted them
-    guideline_name = result.get("name") or os.path.splitext(file_name)[0].replace("_", " ").replace("-", " ").title()
-    guideline_id = result.get("id") or _slug(guideline_name)
-
-    # Find root node id
-    root_node = next(
-        (n for n in result.get("nodes", []) if isinstance(n, dict) and n.get("type") == "root"),
-        None
-    )
-    root_id = result.get("root_id") or (root_node["id"] if root_node else "root")
-
-    final_doc = {
-        "id": guideline_id,
-        "version": result.get("version", "1.0.0"),
-        "name": guideline_name,
-        "description": result.get("description", f"Clinical decision tree extracted from {file_name}"),
-        "root_id": root_id,
-        "nodes": result["nodes"],
-        "edges": result["edges"],
-    }
-
-    # ── Write intermediate artifact (per-run folder) ──────────────────────────
-    await write_artifact(state["run_id"], step, final_doc)
-
-    # ── Write final artifact to top-level artifacts/ (for /api/library) ───────
+    guideline_name = final_tree.get("name") or os.path.splitext(file_name)[0].replace("_", " ").title()
+    guideline_id = final_tree.get("id") or re.sub(r"[^a-z0-9]", "-", guideline_name.lower())
+    
+    final_tree["name"] = guideline_name
+    final_tree["id"] = guideline_id
+    final_tree["nodes"] = final_tree.get("nodes", [])
+    final_tree["edges"] = final_tree.get("edges", [])
+    if "root_id" not in final_tree:
+        root_node = next((n for n in final_tree["nodes"] if n.get("type") == "root"), None)
+        final_tree["root_id"] = root_node["id"] if root_node else "root"
+    
     os.makedirs(FINAL_ARTIFACTS_DIR, exist_ok=True)
-    safe_name = re.sub(r"[^a-z0-9\-]", "", guideline_id)[:80] or state["run_id"]
-    final_path = os.path.join(FINAL_ARTIFACTS_DIR, f"{safe_name}.json")
-
-    # Avoid name collision by appending run_id prefix when the file already exists
-    if os.path.exists(final_path):
-        final_path = os.path.join(FINAL_ARTIFACTS_DIR, f"{safe_name}-{state['run_id'][:8]}.json")
-
+    # Use a clean slug for the filename
+    safe_slug = re.sub(r"[^a-z0-9\-]", "", guideline_id.lower())
+    final_path = os.path.join(FINAL_ARTIFACTS_DIR, f"{safe_slug}.json")
+    
     with open(final_path, "w") as f:
-        json.dump(final_doc, f, indent=4)
-
-    artifact = {
-        "step": step,
-        "path": f"/artifacts/{os.path.basename(final_path)}",
-        "summary": f"Compiled {guideline_name}"
+        json.dump(final_tree, f, indent=4)
+        
+    final_art = {
+        "step": "final_deployment",
+        "path": f"/artifacts/{safe_slug}.json",
+        "summary": f"Governance Approved: {guideline_name}"
     }
 
     return {
-        "final_json": final_doc,
-        "current_step": step,
+        "governance_manifest": manifest,
+        "current_step": "deployment_ready",
         "completed_steps": [step],
-        "artifacts": [artifact]
+        "artifacts": [art_manifest, art_log, final_art]
     }

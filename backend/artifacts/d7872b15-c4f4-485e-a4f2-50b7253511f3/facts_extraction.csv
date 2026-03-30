@@ -1,0 +1,27 @@
+factid,category,content,symptom|action|drug|workflow,priorityweight,source,page,provenance
+1,clinical,ORS is superior to nothing for oral rehydration in children with acute gastroenteritis.,,,"Initial Repairs",0.5,WHO guideline,,# Resolved Manual
+2,clinical,Use ORS if feasible for oral rehydration.,,,"Initial Repairs",0.5,WHO guideline,,# Resolved Manual
+3,clinical,ORS is not clearly superior to alternatives like rice water or saline based on available data.,,,"Initial Repairs",0.5,WHO guideline,,# Resolved Manual
+4,clinical,Zinc supplementation significantly reduces the duration of diarrhea and the number of episodes when given with ORS.,,,"Initial Repairs",0.5,WHO guideline,,# Resolved Manual
+5,clinical,Offer zinc supplementation alongside ORS for the treatment of acute diarrhea in children.,,,"Initial Repairs",0.5,WHO guideline,,# Resolved Manual
+6,clinical,Antibiotics do not significantly improve overall outcomes for acute gastroenteritis in children.,,,"Initial Repairs",0.5,WHO guideline,,# Resolved Manual
+7,clinical,Do not routinely use antibiotics for acute gastroenteritis in children due to lack of benefit and potential harm.,,,"Initial Repairs",0.5,WHO guideline,,# Resolved Manual
+8,clinical,ORS is more effective than hypotonic solutions for oral rehydration.,,,"Initial Repairs",0.5,WHO guideline,,# Resolved Manual
+9,clinical,Use WHO-recommended ORS (oral rehydration salts) for oral rehydration, not hypotonic saline.,,,"Initial Repairs",0.5,WHO guideline,,# Resolved Manual
+10,clinical,More research is needed for enhanced care compared to usual care for high-risk children.,,,"Initial Repairs",0.5,WHO guideline,,# Resolved Manual
+11,clinical,ORS and zinc therapy are the cornerstone for treating diarrheal dehydration.,,,"Red-team Targeted Fixes",0.5,WHO guideline,,# Resolved Manual
+12,clinical,ORS reduces the need for hospitalization and decreases mortality from diarrheal disease.,,,"Red-team Targeted Fixes",0.5,WHO guideline,,# Resolved Manual
+13,clinical,WHO standard ORS (sodium 75 mmol/L, glucose 75 mmol/L) is recommended for rehydration and continued hydration.,,,"Red-team Targeted Fixes",0.5,WHO guideline,,# Resolved Manual
+14,clinical,ORS composition should be as close as possible to the WHO standard.,,,"Red-team Targeted Fixes",0.5,WHO guideline,,# Resolved Manual
+15,clinical,Adequate ORS intake is crucial; monitor intake and consider frequency-based targets.,,,"Red-team Targeted Fixes",0.5,WHO guideline,,# Resolved Manual
+16,clinical,Treatment with ORS should continue for 4-8 weeks depending on child's nutritional status and response.,,,"Red-team Targeted Fixes",0.5,WHO guideline,,# Resolved Manual
+17,clinical,Zinc supplementation (10-14 days) reduces the duration and severity of diarrheal episodes in children 6 months and older.,,,"Red-team Targeted Fixes",0.5,WHO guideline,,# Resolved Manual
+18,clinical,Zinc should be given alongside ORS for the treatment of acute diarrhea in children.,,,"Red-team Targeted Fixes",0.5,WHO guideline,,# Resolved Manual
+19,clinical,WHO recommended zinc dose is 10-20 mg/day for 10-14 days.,,,"Red-team Targeted Fixes",0.5,WHO guideline,,# Resolved Manual
+20,clinical,For infants with persistent diarrhea and secondary lactose intolerance, temporarily switch to lactose-free, protein-based formula.,,,"Red-team Targeted Fixes",0.5,WHO guideline,,# Resolved Manual
+21,clinical,Certain strains of probiotics (e.g., Lactobacillus rhamnosus GG) may reduce the duration of diarrhea slightly when used with ORS.,,,"Red-team Targeted Fixes",0.5,WHO guideline,,# Resolved Manual
+22,clinical,Enhanced care (hospitalization, monitoring, follow-up) may improve outcomes for high-risk children.,,,"Red-team Targeted Fixes",0.5,WHO guideline,,# Resolved Manual
+23,clinical,The confidence in recommendations varies based on the quality of evidence using the GRADE system.,,,"Red-team Targeted Fixes",0.5,WHO guideline,,# Resolved Manual
+24,clinical,Recommendations are generally applicable to children under 5 but need adaptation for different age groups and populations.,,,"Red-team Targeted Fixes",0.5,WHO guideline,,# Resolved Manual
+25,clinical,ORS and zinc therapy are universally recommended for managing diarrheal disease in children under 5.,,,"Red-team Targeted Fixes",0.5,WHO guideline,,# Resolved Manual
+26,clinical,Other interventions like lactose-free formulas and probiotics are recommended in specific cases.,,,"Red-team Targeted Fixes",0.5,WHO guideline,,# Resolved Manual

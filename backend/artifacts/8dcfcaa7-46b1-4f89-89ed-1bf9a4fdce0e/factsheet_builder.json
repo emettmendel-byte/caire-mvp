@@ -1,0 +1,14 @@
+{
+    "vulnerability": "ICSs are generally safe at prescribed doses.",
+    "severity": "Medium",
+    "description": "ICSs are generally safe at prescribed doses.",
+    "mitigation": "Use spacer device to minimize side effects.",
+    "affected_component": "ICSs",
+    "impact": "Side effects such as throat irritation and hoarseness can occur.",
+    "references": [
+        "Common side effects of ICSs include throat irritation and hoarseness.",
+        "Using a spacer device can minimize ICS side effects."
+    ],
+    "nodes": [],
+    "edges": []
+}

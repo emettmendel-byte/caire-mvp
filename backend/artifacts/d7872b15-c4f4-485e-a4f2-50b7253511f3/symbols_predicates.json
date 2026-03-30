@@ -1,0 +1,238 @@
+{
+    "symbols": [
+        {
+            "vslug": "ORS_effective",
+            "name": "ORS is superior to nothing for oral rehydration in children with acute gastroenteritis",
+            "category": "clinical",
+            "priorityweight": 0.5,
+            "source": "\"Initial Repairs\"",
+            "page": "",
+            "provenance": "# Resolved Manual"
+        },
+        {
+            "vslug": "ORS_feasible",
+            "name": "Use ORS if feasible for oral rehydration",
+            "category": "clinical",
+            "priorityweight": 0.5,
+            "source": "\"Initial Repairs\"",
+            "page": "",
+            "provenance": "# Resolved Manual"
+        },
+        {
+            "vslug": "ORS_not_superior",
+            "name": "ORS is not clearly superior to alternatives like rice water or saline based on available data",
+            "category": "clinical",
+            "priorityweight": 0.5,
+            "source": "\"Initial Repairs\"",
+            "page": "",
+            "provenance": "# Resolved Manual"
+        },
+        {
+            "vslug": "zinc_reduction",
+            "name": "Zinc supplementation significantly reduces the duration of diarrhea and the number of episodes when given with ORS",
+            "category": "clinical",
+            "priorityweight": 0.5,
+            "source": "\"Initial Repairs\"",
+            "page": "",
+            "provenance": "# Resolved Manual"
+        },
+        {
+            "vslug": "offer_zinc",
+            "name": "Offer zinc supplementation alongside ORS for the treatment of acute diarrhea in children",
+            "category": "clinical",
+            "priorityweight": 0.5,
+            "source": "\"Initial Repairs\"",
+            "page": "",
+            "provenance": "# Resolved Manual"
+        },
+        {
+            "vslug": "antibiotics_no_improve",
+            "name": "Antibiotics do not significantly improve overall outcomes for acute gastroenteritis in children",
+            "category": "clinical",
+            "priorityweight": 0.5,
+            "source": "\"Initial Repairs\"",
+            "page": "",
+            "provenance": "# Resolved Manual"
+        },
+        {
+            "vslug": "antibiotics_no_routine",
+            "name": "Do not routinely use antibiotics for acute gastroenteritis in children due to lack of benefit and potential harm",
+            "category": "clinical",
+            "priorityweight": 0.5,
+            "source": "\"Initial Repairs\"",
+            "page": "",
+            "provenance": "# Resolved Manual"
+        },
+        {
+            "vslug": "ORS_more_effective",
+            "name": "ORS is more effective than hypotonic solutions for oral rehydration",
+            "category": "clinical",
+            "priorityweight": 0.5,
+            "source": "\"Initial Repairs\"",
+            "page": "",
+            "provenance": "# Resolved Manual"
+        },
+        {
+            "vslug": "use_WHO_ORS",
+            "name": "Use WHO-recommended ORS (oral rehydration salts) for oral rehydration, not hypotonic saline",
+            "category": "clinical",
+            "priorityweight": 0.5,
+            "source": "\"Initial Repairs\"",
+            "page": "",
+            "provenance": "# Resolved Manual"
+        },
+        {
+            "vslug": "more_research_needed",
+            "name": "More research is needed for enhanced care compared to usual care for high-risk children",
+            "category": "clinical",
+            "priorityweight": 0.5,
+            "source": "\"Initial Repairs\"",
+            "page": "",
+            "provenance": "# Resolved Manual"
+        },
+        {
+            "vslug": "ORS_zinc_cornerstone",
+            "name": "ORS and zinc therapy are the cornerstone for treating diarrheal dehydration",
+            "category": "clinical",
+            "priorityweight": 0.5,
+            "source": "\"Red-team Targeted Fixes\"",
+            "page": "",
+            "provenance": "# Resolved Manual"
+        },
+        {
+            "vslug": "ORS_reduces_hospitalization",
+            "name": "ORS reduces the need for hospitalization and decreases mortality from diarrheal disease",
+            "category": "clinical",
+            "priorityweight": 0.5,
+            "source": "\"Red-team Targeted Fixes\"",
+            "page": "",
+            "provenance": "# Resolved Manual"
+        },
+        {
+            "vslug": "WHO_standard_ORS",
+            "name": "WHO standard ORS (sodium 75 mmol/L, glucose 75 mmol/L) is recommended for rehydration and continued hydration",
+            "category": "clinical",
+            "priorityweight": 0.5,
+            "source": "\"Red-team Targeted Fixes\"",
+            "page": "",
+            "provenance": "# Resolved Manual"
+        },
+        {
+            "vslug": "ORS_close_to_standard",
+            "name": "ORS composition should be as close as possible to the WHO standard",
+            "category": "clinical",
+            "priorityweight": 0.5,
+            "source": "\"Red-team Targeted Fixes\"",
+            "page": "",
+            "provenance": "# Resolved Manual"
+        },
+        {
+            "vslug": "ORS_intake_crucial",
+            "name": "Adequate ORS intake is crucial; monitor intake and consider frequency-based targets",
+            "category": "clinical",
+            "priorityweight": 0.5,
+            "source": "\"Red-team Targeted Fixes\"",
+            "page": "",
+            "provenance": "# Resolved Manual"
+        },
+        {
+            "vslug": "ORS_duration",
+            "name": "Treatment with ORS should continue for 4-8 weeks depending on child's nutritional status and response",
+            "category": "clinical",
+            "priorityweight": 0.5,
+            "source": "\"Red-team Targeted Fixes\"",
+            "page": "",
+            "provenance": "# Resolved Manual"
+        },
+        {
+            "vslug": "zinc_reduction_duration",
+            "name": "Zinc supplementation (10-14 days) reduces the duration and severity of diarrheal episodes in children 6 months and older",
+            "category": "clinical",
+            "priorityweight": 0.5,
+            "source": "\"Red-team Targeted Fixes\"",
+            "page": "",
+            "provenance": "# Resolved Manual"
+        },
+        {
+            "vslug": "zinc_alongside_ORS",
+            "name": "Zinc should be given alongside ORS for the treatment of acute diarrhea in children",
+            "category": "clinical",
+            "priorityweight": 0.5,
+            "source": "\"Red-team Targeted Fixes\"",
+            "page": "",
+            "provenance": "# Resolved Manual"
+        },
+        {
+            "vslug": "WHO_zinc_dose",
+            "name": "WHO recommended zinc dose is 10-20 mg/day for 10-14 days",
+            "category": "clinical",
+            "priorityweight": 0.5,
+            "source": "\"Red-team Targeted Fixes\"",
+            "page": "",
+            "provenance": "# Resolved Manual"
+        },
+        {
+            "vslug": "lactose_free_formula",
+            "name": "For infants with persistent diarrhea and secondary lactose intolerance, temporarily switch to lactose-free, protein-based formula",
+            "category": "clinical",
+            "priorityweight": 0.5,
+            "source": "\"Red-team Targeted Fixes\"",
+            "page": "",
+            "provenance": "# Resolved Manual"
+        },
+        {
+            "vslug": "probiotics_reduction",
+            "name": "Certain strains of probiotics (e.g., Lactobacillus rhamnosus GG) may reduce the duration of diarrhea slightly when used with ORS",
+            "category": "clinical",
+            "priorityweight": 0.5,
+            "source": "\"Red-team Targeted Fixes\"",
+            "page": "",
+            "provenance": "# Resolved Manual"
+        },
+        {
+            "vslug": "enhanced_care_improve",
+            "name": "Enhanced care (hospitalization, monitoring, follow-up) may improve outcomes for high-risk children",
+            "category": "clinical",
+            "priorityweight": 0.5,
+            "source": "\"Red-team Targeted Fixes\"",
+            "page": "",
+            "provenance": "# Resolved Manual"
+        },
+        {
+            "vslug": "confidence_varies",
+            "name": "The confidence in recommendations varies based on the quality of evidence using the GRADE system",
+            "category": "clinical",
+            "priorityweight": 0.5,
+            "source": "\"Red-team Targeted Fixes\"",
+            "page": "",
+            "provenance": "# Resolved Manual"
+        },
+        {
+            "vslug": "recommendations_applicable",
+            "name": "Recommendations are generally applicable to children under 5 but need adaptation for different age groups and populations",
+            "category": "clinical",
+            "priorityweight": 0.5,
+            "source": "\"Red-team Targeted Fixes\"",
+            "page": "",
+            "provenance": "# Resolved Manual"
+        },
+        {
+            "vslug": "ORS_zinc_universal",
+            "name": "ORS and zinc therapy are universally recommended for managing diarrheal disease in children under 5",
+            "category": "clinical",
+            "priorityweight": 0.5,
+            "source": "\"Red-team Targeted Fixes\"",
+            "page": "",
+            "provenance": "# Resolved Manual"
+        },
+        {
+            "vslug": "other_interventions",
+            "name": "Other interventions like lactose-free formulas and probiotics are recommended in specific cases",
+            "category": "clinical",
+            "priorityweight": 0.5,
+            "source": "\"Red-team Targeted Fixes\"",
+            "page": "",
+            "provenance": "# Resolved Manual"
+        }
+    ]
+}

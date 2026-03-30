@@ -1,0 +1,6 @@
+{
+    "query": "I am considering the guidelines for managing pediatric diarrhea. I need to know the recommended approach for using oral rehydration solutions (ORS) and zinc supplementation. Also, I'm wondering about the role of antibiotics and probiotics in this context. Additionally, I'd like to understand the duration of ORS treatment and any specific recommendations for infants with lactose intolerance.",
+    "response": "Based on the provided guidelines, ORS and zinc supplementation are the cornerstone of managing pediatric diarrhea. ORS should be used for rehydration, and zinc is recommended for reducing the duration and severity of diarrhea in children over 6 months. Antibiotics are not routinely recommended as they do not improve outcomes and may cause harm. Probiotics may be considered for certain strains, but evidence is mixed. ORS treatment should continue for 4-8 weeks depending on the child's response. For infants with persistent diarrhea and secondary lactose intolerance, a temporary switch to lactose-free formula may be advised. Always follow WHO recommendations for ORS composition and zinc dosing.",
+    "nodes": [],
+    "edges": []
+}
