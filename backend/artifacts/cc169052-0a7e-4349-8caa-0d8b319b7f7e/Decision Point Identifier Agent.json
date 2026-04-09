@@ -1,0 +1,111 @@
+{
+    "nodes": [
+        {
+            "id": "root",
+            "type": "root",
+            "label": "Clinical Decision Point",
+            "description": "This is the root node representing the clinical decision-making process.",
+            "origin": null,
+            "output_type": "string",
+            "output_map": {},
+            "condition": {},
+            "metadata": {}
+        },
+        {
+            "id": "question_1",
+            "type": "question",
+            "label": "Medication Type",
+            "description": "What type of medication is being considered?",
+            "origin": "root",
+            "output_type": "string",
+            "output_map": {
+                "yes": "node_1",
+                "no": "node_2"
+            },
+            "condition": {
+                "variable": "medication_type",
+                "operator": "=",
+                "threshold": "ICS or LABA"
+            },
+            "metadata": {
+                "question": {
+                    "prompt": "What type of medication is being considered?",
+                    "choices": [
+                        "ICS",
+                        "LABA",
+                        "Other"
+                    ]
+                }
+            }
+        },
+        {
+            "id": "outcome_1",
+            "type": "outcome",
+            "label": "Inhaled Corticosteroids (ICS)",
+            "description": "Decision to use Inhaled Corticosteroids (ICS) as a medication.",
+            "origin": "question_1",
+            "output_type": "boolean",
+            "output_map": {
+                "true": "node_3",
+                "false": "node_4"
+            },
+            "condition": {
+                "variable": "ics_used",
+                "operator": ">=",
+                "threshold": "5"
+            },
+            "metadata": {
+                "question": {
+                    "prompt": "Should Inhaled Corticosteroids (ICS) be used?",
+                    "choices": [
+                        "Yes",
+                        "No"
+                    ]
+                }
+            }
+        },
+        {
+            "id": "outcome_2",
+            "type": "outcome",
+            "label": "Long-Acting Beta2-Agonists (LABA)",
+            "description": "Decision to use Long-Acting Beta2-Agonists (LABA) as a medication.",
+            "origin": "question_1",
+            "output_type": "boolean",
+            "output_map": {
+                "true": "node_5",
+                "false": "node_6"
+            },
+            "condition": {
+                "variable": "labas_used",
+                "operator": "<=",
+                "threshold": "10"
+            },
+            "metadata": {
+                "question": {
+                    "prompt": "Should Long-Acting Beta2-Agonists (LABA) be used?",
+                    "choices": [
+                        "Yes",
+                        "No"
+                    ]
+                }
+            }
+        }
+    ],
+    "edges": [
+        {
+            "source_id": "root",
+            "target_id": "question_1",
+            "label": "Start"
+        },
+        {
+            "source_id": "question_1",
+            "target_id": "outcome_1",
+            "label": "ICS Decision"
+        },
+        {
+            "source_id": "outcome_1",
+            "target_id": "outcome_2",
+            "label": "LABA Decision"
+        }
+    ]
+}

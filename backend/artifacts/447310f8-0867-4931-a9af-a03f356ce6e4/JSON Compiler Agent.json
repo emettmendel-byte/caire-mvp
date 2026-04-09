@@ -1,0 +1,55 @@
+{
+    "id": "who-guideline-diarrhea-pneumonia",
+    "version": "1.0.0",
+    "name": "WHO Guidelines Diarrhea and Pneumonia Management",
+    "description": "A decision tree for the management of diarrhea and pneumonia in children based on WHO guidelines.",
+    "root_id": "root",
+    "nodes": [
+        {
+            "id": "root",
+            "type": "root",
+            "label": "Root",
+            "description": "The root node represents the starting point of the guideline.",
+            "origin": null
+        },
+        {
+            "id": "question_node_1",
+            "type": "question",
+            "label": "Guideline Development Process",
+            "description": "This node represents the process of developing the guideline, including the WHO Steering Group, Guideline Development Group, systematic review teams, and external peer review.",
+            "origin": "root",
+            "output_type": "string",
+            "output_map": {
+                "source_id": "root",
+                "target_id": "question_node_1"
+            },
+            "metadata": {
+                "question": "How was the guideline developed?"
+            }
+        },
+        {
+            "id": "outcome_node_1",
+            "type": "outcome",
+            "label": "Evidence and Recommendations",
+            "description": "This node represents the evidence and recommendations for the management of pneumonia and diarrhoea in children.",
+            "origin": "question_node_1",
+            "output_type": "string",
+            "output_map": {
+                "source_id": "question_node_1",
+                "target_id": "outcome_node_1"
+            }
+        }
+    ],
+    "edges": [
+        {
+            "source_id": "root",
+            "target_id": "question_node_1",
+            "label": "Starts with"
+        },
+        {
+            "source_id": "question_node_1",
+            "target_id": "outcome_node_1",
+            "label": "Leads to"
+        }
+    ]
+}

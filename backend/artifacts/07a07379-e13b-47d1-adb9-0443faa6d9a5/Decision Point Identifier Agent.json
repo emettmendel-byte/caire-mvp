@@ -1,9 +1,4 @@
 {
-    "id": "asthma-guidelines",
-    "version": "1.0.0",
-    "name": "Asthma Guidelines",
-    "description": "Decision tree for medication choices in asthma management.",
-    "root_id": "medication_choice",
     "nodes": [
         {
             "id": "medication_choice",
@@ -100,7 +95,5 @@
             "target_id": "labas_combination",
             "label": "LABAs Combination"
         }
-    ],
-    "created_at": "2026-03-31T18:52:13.983758Z",
-    "created_at_unix": 1775008333
+    ]
 }

@@ -1,0 +1,81 @@
+{
+    "id": "asthma_guidelines",
+    "version": "1.0.0",
+    "name": "Asthma Guidelines",
+    "description": "Decision tree for asthma management based on LABA and ICS usage.",
+    "root_id": "root",
+    "nodes": [
+        {
+            "id": "root",
+            "type": "root",
+            "label": "Root",
+            "description": "",
+            "origin": null,
+            "output_type": null,
+            "output_map": {},
+            "condition": {},
+            "metadata": {}
+        },
+        {
+            "id": "use_labas_with_ics",
+            "type": "question",
+            "label": "Use LABAs with ICS",
+            "description": "Determine if LABAs are being used with ICS.",
+            "origin": "root",
+            "output_type": "boolean",
+            "output_map": {
+                "true": "outcome_1",
+                "false": "outcome_2"
+            },
+            "condition": {
+                "variable": "labas_used_without_ics",
+                "operator": "not equal",
+                "threshold": "false"
+            },
+            "metadata": {
+                "question": {
+                    "text": "Are LABAs being used without adequate ICS?"
+                }
+            }
+        },
+        {
+            "id": "outcome_1",
+            "type": "outcome",
+            "label": "Safe Use",
+            "description": "LABAs used with ICS.",
+            "origin": "use_labas_with_ics",
+            "output_type": "string",
+            "output_map": {},
+            "condition": {},
+            "metadata": {}
+        },
+        {
+            "id": "outcome_2",
+            "type": "outcome",
+            "label": "Inappropriate Use",
+            "description": "LABAs used without ICS.",
+            "origin": "use_labas_with_ics",
+            "output_type": "string",
+            "output_map": {},
+            "condition": {},
+            "metadata": {}
+        }
+    ],
+    "edges": [
+        {
+            "source_id": "root",
+            "target_id": "use_labas_with_ics",
+            "label": "Start"
+        },
+        {
+            "source_id": "use_labas_with_ics",
+            "target_id": "outcome_1",
+            "label": "Yes"
+        },
+        {
+            "source_id": "use_labas_with_ics",
+            "target_id": "outcome_2",
+            "label": "No"
+        }
+    ]
+}

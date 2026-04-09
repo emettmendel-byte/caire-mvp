@@ -4,15 +4,42 @@ from fastapi.responses import FileResponse
 from pydantic import BaseModel
 import os
 import uuid
+import json
+import time
 from typing import Dict, Any, List, Optional
 from .models import PromptUpdate, PipelineStatusResponse, GraphState
-from .pipeline.prompts import load_prompt_library, update_prompt, _save_library, get_pipeline_recipe
+from .pipeline.prompts import (
+    load_prompt_library,
+    update_prompt,
+    _save_library,
+    get_pipeline_recipe,
+    get_all_pipelines_expanded,
+)
 from .pipeline.langgraph_workflow import graph
+from .pipeline.dynamic_workflow import dynamic_graph
 
 app = FastAPI(title="Clinical Guideline Parsing Pipeline")
 
 # In-memory storage for MVP. For production, use DB/Redis.
 runs_db: Dict[str, PipelineStatusResponse] = {}
+DEBUG_LOG_PATH = "/Users/emett/Desktop/caire-mvp/.cursor/debug-a7d7a6.log"
+DEBUG_SESSION_ID = "a7d7a6"
+
+def _debug_log(run_id: str, hypothesis_id: str, location: str, message: str, data: Dict[str, Any]) -> None:
+    payload = {
+        "sessionId": DEBUG_SESSION_ID,
+        "runId": run_id,
+        "hypothesisId": hypothesis_id,
+        "location": location,
+        "message": message,
+        "data": data,
+        "timestamp": int(time.time() * 1000),
+    }
+    try:
+        with open(DEBUG_LOG_PATH, "a") as f:
+            f.write(json.dumps(payload) + "\n")
+    except Exception:
+        pass
 
 # Make sure directories exist
 FRONTEND_DIR = os.path.join(os.path.dirname(__file__), "..", "frontend")
@@ -70,13 +97,14 @@ def delete_from_prompt_bank(prompt_id: str):
 
 @app.get("/api/pipelines")
 def get_pipelines():
-    return load_prompt_library()["pipelines"]
+    # Expand pipelines so each step has local `prompt_text` for the UI.
+    return get_all_pipelines_expanded()
 
 class PipelineRecipe(BaseModel):
     id: str
     name: str
     description: str = ""
-    steps: Dict[str, str]
+    steps: List[Dict[str, Any]] = []
 
 @app.post("/api/pipelines")
 def save_pipeline(recipe: PipelineRecipe):
@@ -149,20 +177,35 @@ def list_pdfs():
     out.sort(key=lambda x: x["date"], reverse=True)
     return out
 
-from .pipeline.dynamic_workflow import dynamic_graph
-from .pipeline.prompts import get_pipeline_recipe
-
 async def run_pipeline_task(run_id: str, file_name: str, extracted_text: str, pipeline_id: str = "default-governance"):
-    """Background task to run the dynamic LangGraph workflow."""
-    # Fetch the actual steps for this pipeline
+    """
+    Background task to run the dynamic LangGraph workflow for the specified pipeline.
+
+    The `pipeline_id` selects which prompt-chain recipe to use (e.g. default-governance vs sample-pipeline),
+    and the dynamic graph executes those steps via the universal step node.
+    """
     recipe = get_pipeline_recipe(pipeline_id)
     steps = recipe.get("steps", []) if recipe else []
-    
+    # region agent log
+    _debug_log(
+        run_id,
+        "H1",
+        "main.py:run_pipeline_task:recipe",
+        "Loaded pipeline recipe",
+        {"pipeline_id": pipeline_id, "recipe_found": bool(recipe), "steps_count": len(steps), "step_ids": [s.get("id") for s in steps if isinstance(s, dict)]},
+    )
+    # endregion
+    if not steps:
+        runs_db[run_id].status = "failed"
+        runs_db[run_id].current_step = f"[Failure at Step: init] - No steps found for pipeline '{pipeline_id}'"
+        return
+
     initial_state = GraphState(
         run_id=run_id,
         pipeline_id=pipeline_id,
         file_name=file_name,
         pdf_text=extracted_text,
+        # Dynamic fields drive the universal step node sequence.
         pipeline_steps=steps,
         step_index=0,
         manual_repairs=None,
@@ -174,25 +217,24 @@ async def run_pipeline_task(run_id: str, file_name: str, extracted_text: str, pi
         validation_retries=0,
         current_step="started",
         completed_steps=[],
-        artifacts=[]
+        artifacts=[],
+        sample_outputs={},
     )
     
     runs_db[run_id].status = "running"
     
     try:
+        # Dynamic graph executes the per-pipeline step list via universal_step_node.
         async for event in dynamic_graph.astream(initial_state):
             # event is a dict containing the node name and its output
-            # For example: {"extract_text": {"extracted_data": ...}}
             for node_name, updates in event.items():
                 if isinstance(updates, dict) and "current_step" in updates:
                     runs_db[run_id].current_step = updates["current_step"]
                     runs_db[run_id].completed_steps.extend(updates.get("completed_steps", []))
                     runs_db[run_id].artifacts.extend(updates.get("artifacts", []))
-                    
         # When loop finishes, the graph reached END
         runs_db[run_id].status = "completed"
         runs_db[run_id].current_step = "done"
-
     except Exception as e:
         last_step = runs_db[run_id].current_step or "unknown"
         error_msg = f"[Failure at Step: {last_step}] - {str(e)}"

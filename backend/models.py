@@ -44,3 +44,8 @@ class GraphState(TypedDict):
     # All artifacts generated across the entire pipeline
     artifacts: Annotated[List[Dict[str, Any]], operator.add]
     validation_retries: int
+
+    # Special-case state for the built-in `sample-pipeline` prompt chain.
+    # Stores parsed JSON outputs keyed by `prompt_id` so later sample steps
+    # can receive the exact structured inputs they expect.
+    sample_outputs: Dict[str, Any]

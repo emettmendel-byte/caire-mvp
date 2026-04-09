@@ -1,0 +1,22 @@
+{
+    "chunks": [
+        {
+            "id": "chunk_1",
+            "title": "Medications",
+            "content": "# Medications\n\n# Inhaled Corticosteroids (ICS)\n\n# Long-Acting Beta2-Agonists (LABA)",
+            "type": "other"
+        },
+        {
+            "id": "chunk_2",
+            "title": "Patient Education",
+            "content": "# Patient Education\n\n# Responding to Questions",
+            "type": "other"
+        },
+        {
+            "id": "chunk_3",
+            "title": "Resources",
+            "content": "# Resources",
+            "type": "other"
+        }
+    ]
+}

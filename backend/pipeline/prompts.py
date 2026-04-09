@@ -381,15 +381,14 @@ DEFAULT_PIPELINES = [
     {
         "id": "sample-pipeline",
         "name": "Sample Pipeline",
-        "description": "A 7-stage simplified extraction pipeline focusing on chunking, merging, and validation.",
+        "description": "A simplified extraction pipeline focusing on chunking, merging, and validation.",
         "steps": [
             {"id": "s1", "name": "Text Extraction", "prompt_id": "sample_extract"},
             {"id": "s2", "name": "Chunking", "prompt_id": "sample_chunk"},
             {"id": "s3", "name": "Decision ID", "prompt_id": "sample_id"},
             {"id": "s4", "name": "Subtree Builder", "prompt_id": "sample_subtree"},
             {"id": "s5", "name": "Tree Merger", "prompt_id": "sample_merge"},
-            {"id": "s6", "name": "Validator", "prompt_id": "sample_validate"},
-            {"id": "s7", "name": "JSON Compiler", "prompt_id": "sample_compile"}
+            {"id": "s6", "name": "Validator", "prompt_id": "sample_validate"}
         ]
     }
 ]
@@ -445,12 +444,47 @@ def _save_library(data: Dict[str, Any]):
     with open(PROMPTS_FILE, "w") as f:
         json.dump(data, f, indent=4)
 
+def _expand_pipeline(pipeline: Dict[str, Any], lib: Dict[str, Any]) -> Dict[str, Any]:
+    """
+    Ensures each pipeline step contains a local `prompt_text` so the UI no longer
+    depends on an external prompt bank.
+    """
+    expanded = dict(pipeline)
+    steps = expanded.get("steps", [])
+
+    # Defensive: older/incorrect stored data might use a dict.
+    if isinstance(steps, dict):
+        steps_list: List[Dict[str, Any]] = []
+        for i, (k, prompt_id) in enumerate(steps.items()):
+            steps_list.append({"id": f"s{i+1}", "name": k.replace("_", " ").title(), "prompt_id": prompt_id})
+        steps = steps_list
+
+    if not isinstance(steps, list):
+        steps = []
+
+    expanded_steps: List[Dict[str, Any]] = []
+    for step in steps:
+        s = dict(step) if isinstance(step, dict) else {}
+        if (not s.get("prompt_text")) and s.get("prompt_id"):
+            prompt_id = s.get("prompt_id")
+            prompt = lib.get("prompts", {}).get(prompt_id, {})
+            s["prompt_text"] = prompt.get("text", "")
+            s["prompt_name"] = prompt.get("name", prompt_id)
+        expanded_steps.append(s)
+
+    expanded["steps"] = expanded_steps
+    return expanded
+
+def get_all_pipelines_expanded() -> List[Dict[str, Any]]:
+    lib = load_prompt_library()
+    return [_expand_pipeline(p, lib) for p in lib.get("pipelines", [])]
+
 def get_pipeline_recipe(pipeline_id: str) -> Optional[Dict[str, Any]]:
     lib = load_prompt_library()
     for p in lib.get("pipelines", []):
         if p["id"] == pipeline_id:
-            return p
-    return lib["pipelines"][0] if lib["pipelines"] else None
+            return _expand_pipeline(p, lib)
+    return _expand_pipeline(lib["pipelines"][0], lib) if lib.get("pipelines") else None
 
 def get_step_config(pipeline_id: str, step_index: int) -> Optional[Dict[str, Any]]:
     """Gets the configuration for a specific step in a dynamic pipeline."""

@@ -1,0 +1,40 @@
+{
+    "chunks": [
+        {
+            "id": "chunk_1",
+            "title": "Introduction",
+            "content": "This document provides essential information for healthcare professionals and patients regarding asthma management, focusing on inhaled corticosteroids and long-acting beta-agonists.",
+            "type": "other"
+        },
+        {
+            "id": "chunk_2",
+            "content": "ICSs are the cornerstone of asthma treatment, effective for long-term control by reducing airway inflammation. Common side effects include oral thrush and potential impact on growth in children.",
+            "title": "Medications: Inhaled Corticosteroids (ICS)",
+            "type": "criteria"
+        },
+        {
+            "id": "chunk_3",
+            "title": "Medications: Long-Acting Beta2-Agonists (LABAs)",
+            "content": "LABAs should only be used in combination with ICSs for asthma control. They carry a risk of severe exacerbations if used without adequate ICS.",
+            "type": "criteria"
+        },
+        {
+            "id": "chunk_4",
+            "title": "Patient Education: Common Questions",
+            "content": "Patients often have concerns about the safety and efficacy of ICSs. It is important to address these by emphasizing the benefits and the importance of proper usage.",
+            "type": "other"
+        },
+        {
+            "id": "chunk_5",
+            "title": "Patient Education: Addressing Misconceptions",
+            "content": "Clarify that ICSs are not addictive and are not the same as anabolic steroids used by athletes.",
+            "type": "other"
+        },
+        {
+            "id": "chunk_6",
+            "title": "Resources",
+            "content": "A list of organizations and websites for further information on asthma management and patient support.",
+            "type": "other"
+        }
+    ]
+}

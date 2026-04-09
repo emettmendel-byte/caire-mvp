@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
-import { Activity, Library, Network, FileDown, Eye, Upload, File, CheckCircle2, Circle, Loader2, Trash2, Play, ExternalLink, BookOpen, Plus, Save, X, ChevronDown, Settings2 } from 'lucide-react';
+import { Activity, Library, Network, FileDown, Eye, Upload, File, CheckCircle2, Circle, Loader2, Trash2, Play, ExternalLink, BookOpen, Plus, Save, X, ChevronDown, ChevronUp, Settings2 } from 'lucide-react';
 import { format } from 'date-fns';
 import { ReactFlow, Controls, Background, MiniMap, useNodesState, useEdgesState } from '@xyflow/react';
 import '@xyflow/react/dist/style.css';
@@ -21,16 +21,14 @@ const PIPELINE_STEPS = [
 
 // --- VIEW COMPONENTS --- //
 
-const PipelineView = ({ status, tracker, file, onFileChange, onUpload, onViewArtifact, pipelines, selectedPipelineId, onPipelineChange, promptBank }) => {
+const PipelineView = ({ status, tracker, file, onFileChange, onUpload, onViewArtifact, pipelines, selectedPipelineId, onPipelineChange }) => {
   const currentRecipe = pipelines.find(p => p.id === selectedPipelineId);
   const steps = Array.isArray(currentRecipe?.steps) ? currentRecipe.steps : [];
-
-  const dynamicSteps = steps.map((step, idx) => {
-    const prompt = promptBank[step.prompt_id];
+  const dynamicSteps = (steps.length ? steps : PIPELINE_STEPS).map((step, idx) => {
     return {
       id: step.id || `s${idx}`,
-      label: step.name || prompt?.name || `Step ${idx + 1}`,
-      desc: prompt?.description || `Executing ${step.name || 'task'}...`
+      label: step.name || step.prompt_name || `Step ${idx + 1}`,
+      desc: step.prompt_name ? `Executing ${step.prompt_name}` : `Executing ${step.name || 'task'}...`
     };
   });
 
@@ -393,206 +391,40 @@ const FileViewer = ({ filePath }) => {
 };
 
 
-const PipelineBuilderView = ({ promptBank, pipelines, onRefresh }) => {
-  const [editingPrompt, setEditingPrompt] = useState(null);
-  const [newPrompt, setNewPrompt] = useState({ id: '', name: '', text: '' });
-  const [showNew, setShowNew] = useState(false);
-  const [editingPipeline, setEditingPipeline] = useState(null);
-  const [newPipelineSteps, setNewPipelineSteps] = useState([]); // Array of steps
-  const [newPipelineMeta, setNewPipelineMeta] = useState({ id: '', name: '', description: '' });
-  const [showNewPipeline, setShowNewPipeline] = useState(false);
-  const [activeSection, setActiveSection] = useState('pipelines');
-
-  const promptList = Object.values(promptBank);
-
-  const savePrompt = async (prompt) => {
-    await fetch('/api/prompt-bank', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(prompt)
-    });
-    onRefresh();
-    setShowNew(false);
-    setEditingPrompt(null);
-  };
-
-  const deletePrompt = async (id) => {
-    if (!confirm(`Delete prompt "${id}"?`)) return;
-    await fetch(`/api/prompt-bank/${id}`, { method: 'DELETE' });
-    onRefresh();
-  };
-
-  const savePipeline = async () => {
-    const recipe = { ...newPipelineMeta, steps: newPipelineSteps };
-    await fetch('/api/pipelines', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(recipe)
-    });
-    onRefresh();
-    setShowNewPipeline(false);
-  };
-
-  const deletePipeline = async (id) => {
-    if (!confirm(`Delete pipeline "${id}"?`)) return;
-    await fetch(`/api/pipelines/${id}`, { method: 'DELETE' });
-    onRefresh();
-  };
-
-  const startEditPipeline = (pipeline) => {
-    setNewPipelineMeta({ id: pipeline.id, name: pipeline.name, description: pipeline.description || '' });
-    setNewPipelineSteps(Array.isArray(pipeline.steps) ? [...pipeline.steps] : []);
-    setShowNewPipeline(true);
-    setEditingPipeline(pipeline.id);
-  };
-
-  const addStep = () => {
-    const newStep = { id: `s${newPipelineSteps.length + 1}`, name: 'New Task', prompt_id: '' };
-    setNewPipelineSteps([...newPipelineSteps, newStep]);
-  };
-
-  const removeStep = (idx) => {
-    const updated = [...newPipelineSteps];
-    updated.splice(idx, 1);
-    setNewPipelineSteps(updated);
-  };
-
-  const moveStep = (idx, direction) => {
-    if (idx + direction < 0 || idx + direction >= newPipelineSteps.length) return;
-    const updated = [...newPipelineSteps];
-    const item = updated[idx];
-    updated.splice(idx, 1);
-    updated.splice(idx + direction, 0, item);
-    setNewPipelineSteps(updated);
-  };
-
+const PipelineBuilderView = ({ pipelines }) => {
   return (
     <div className="builder-layout">
       <div className="builder-header">
         <div className="tab-group">
-          <button className={`tab-btn ${activeSection === 'pipelines' ? 'active' : ''}`} onClick={() => setActiveSection('pipelines')}>Pipeline Recipes</button>
-          <button className={`tab-btn ${activeSection === 'prompts' ? 'active' : ''}`} onClick={() => setActiveSection('prompts')}>Prompt Bank</button>
+          <button className="tab-btn active">Pipeline Recipes (Read-only)</button>
         </div>
-        {activeSection === 'pipelines' && !showNewPipeline && (
-          <button className="btn primary-btn small" onClick={() => {
-            setNewPipelineMeta({ id: '', name: '', description: '' });
-            setNewPipelineSteps([]);
-            setEditingPipeline(null);
-            setShowNewPipeline(true);
-          }}><Plus size={14}/> New Pipeline</button>
-        )}
-        {activeSection === 'prompts' && !showNew && (
-          <button className="btn primary-btn small" onClick={() => {
-            setNewPrompt({ id: '', name: '', text: '' });
-            setEditingPrompt(null);
-            setShowNew(true);
-          }}><Plus size={14}/> Create Prompt</button>
-        )}
       </div>
 
       <div className="builder-main">
-        {activeSection === 'pipelines' && (
-          <div className="glass-panel card">
-            {showNewPipeline ? (
-              <div className="pipeline-workspace">
-                <div className="workspace-header">
-                  <h3>{editingPipeline ? 'Refining Pipeline' : 'Designing New Pipeline'}</h3>
-                  <div className="header-actions">
-                    <button className="btn primary-btn small" onClick={savePipeline} disabled={!newPipelineMeta.id}><Save size={14}/> Save</button>
-                    <button className="btn ghost-btn small" onClick={() => setShowNewPipeline(false)}><X size={14}/></button>
+        <div className="glass-panel card">
+          <div className="recipe-grid">
+            {pipelines.length === 0 && <p className="empty-state">No pipelines configured.</p>}
+            {pipelines.map(pl => (
+              <div key={pl.id} className="glass-panel recipe-card">
+                <div className="card-header-row">
+                  <div>
+                    <h4 className="recipe-title">{pl.name}</h4>
+                    <span className="tiny-id">{pl.id}</span>
                   </div>
                 </div>
-                <div className="meta-inputs">
-                  <input className="form-input" placeholder="Pipeline ID (slug)" value={newPipelineMeta.id} onChange={e => setNewPipelineMeta(p => ({...p, id: e.target.value}))} disabled={!!editingPipeline} />
-                  <input className="form-input" placeholder="Display Name" value={newPipelineMeta.name} onChange={e => setNewPipelineMeta(p => ({...p, name: e.target.value}))} />
-                </div>
-                
-                <div className="timeline-builder">
-                  {newPipelineSteps.map((step, idx) => (
-                    <div key={idx} className="timeline-item">
-                      <div className="item-number">{idx + 1}</div>
-                      <div className="item-controls">
-                        <input className="step-name-input" value={step.name} onChange={e => {
-                          const updated = [...newPipelineSteps];
-                          updated[idx].name = e.target.value;
-                          setNewPipelineSteps(updated);
-                        }} placeholder="Step Name..." />
-                        <select className="step-prompt-select" value={step.prompt_id} onChange={e => {
-                          const updated = [...newPipelineSteps];
-                          updated[idx].prompt_id = e.target.value;
-                          setNewPipelineSteps(updated);
-                        }}>
-                          <option value="">Select Prompt Template...</option>
-                          {promptList.map(p => <option key={p.id} value={p.id}>{p.name}</option>)}
-                        </select>
-                      </div>
-                      <div className="item-actions">
-                        <button className="icon-btn" onClick={() => moveStep(idx, -1)}><ChevronUp size={14}/></button>
-                        <button className="icon-btn" onClick={() => moveStep(idx, 1)}><ChevronDown size={14}/></button>
-                        <button className="icon-btn delete" onClick={() => removeStep(idx)}><Trash2 size={14}/></button>
-                      </div>
+                <div className="step-count-badge">{(pl.steps || []).length} Agents</div>
+                <div className="recipe-steps-preview">
+                  {(pl.steps || []).map((s, idx) => (
+                    <div key={s.id || idx} className="recipe-step-row">
+                      <span className="step-index">{idx + 1}.</span>
+                      <span className="step-name">{s.name || s.prompt_name || s.id}</span>
                     </div>
                   ))}
-                  <button className="add-step-btn" onClick={addStep}><Plus size={16}/> Add Agent Pipeline Step</button>
                 </div>
               </div>
-            ) : (
-              <div className="recipe-grid">
-                {pipelines.length === 0 && <p className="empty-state">No pipelines configured.</p>}
-                {pipelines.map(pl => (
-                  <div key={pl.id} className="glass-panel recipe-card" onClick={() => startEditPipeline(pl)}>
-                    <div className="card-header-row">
-                      <div>
-                        <h4 className="recipe-title">{pl.name}</h4>
-                        <span className="tiny-id">{pl.id}</span>
-                      </div>
-                      <button className="icon-btn delete" onClick={(e) => { e.stopPropagation(); deletePipeline(pl.id); }}><Trash2 size={14}/></button>
-                    </div>
-                    <div className="step-count-badge">{(pl.steps || []).length} Agents</div>
-                  </div>
-                ))}
-              </div>
-            )}
+            ))}
           </div>
-        )}
-
-        {activeSection === 'prompts' && (
-          <div className="glass-panel card">
-            {showNew && (
-              <div className="glass-panel prompt-editor">
-                <h3>{editingPrompt ? 'Edit Logic Template' : 'Create Logic Template'}</h3>
-                <input className="form-input" placeholder="Template ID" value={newPrompt.id} onChange={e => setNewPrompt(p => ({...p, id: e.target.value}))} disabled={!!editingPrompt} />
-                <input className="form-input" placeholder="Display Name" value={newPrompt.name} onChange={e => setNewPrompt(p => ({...p, name: e.target.value}))} />
-                <textarea className="form-textarea" placeholder="System instructions..." value={newPrompt.text} onChange={e => setNewPrompt(p => ({...p, text: e.target.value}))} rows={10} />
-                <div className="editor-actions">
-                  <button className="btn primary-btn small" onClick={() => savePrompt(newPrompt)}><Save size={14}/> Save</button>
-                  <button className="btn ghost-btn small" onClick={() => setShowNew(false)}><X size={14}/> Cancel</button>
-                </div>
-              </div>
-            )}
-            <div className="prompt-grid">
-              {promptList.map(p => (
-                <div key={p.id} className="glass-panel prompt-item">
-                  <div className="prompt-item-header">
-                    <div>
-                      <span className="prompt-name">{p.name}</span>
-                      <span className="tiny-id">{p.id}</span>
-                    </div>
-                    <div className="card-actions">
-                      <button className="action-btn" title="Edit" onClick={() => {
-                        setNewPrompt({ id: p.id, name: p.name, text: p.text });
-                        setEditingPrompt(p.id);
-                        setShowNew(true);
-                      }}><Settings2 size={15}/></button>
-                      <button className="action-btn delete" title="Delete" onClick={() => deletePrompt(p.id)}><Trash2 size={15}/></button>
-                    </div>
-                  </div>
-                  <pre className="prompt-preview">{p.text.slice(0, 150)}{p.text.length > 150 ? '...' : ''}</pre>
-                </div>
-              ))}
-            </div>
-          </div>
-        )}
+        </div>
       </div>
     </div>
   );
@@ -604,7 +436,6 @@ export default function App() {
   const [activeJsonPath, setActiveJsonPath] = useState(null);
   const [selectedPipelineId, setSelectedPipelineId] = useState('default-governance');
   const [pipelines, setPipelines] = useState([{ id: 'default-governance', name: 'Clinical Governance Standard' }]);
-  const [promptBank, setPromptBank] = useState({});
 
   // Pipeline State (Persisted across tabs)
   const [file, setFile] = useState(null);
@@ -614,7 +445,6 @@ export default function App() {
 
   const fetchAll = useCallback(() => {
     fetch('/api/pipelines').then(r => r.json()).then(d => { if (d.length) setPipelines(d); }).catch(() => {});
-    fetch('/api/prompt-bank').then(r => r.json()).then(d => { setPromptBank(d); }).catch(() => {});
   }, []);
 
   useEffect(() => {
@@ -728,8 +558,8 @@ export default function App() {
           <button className={`header-tab ${activeTab === 'view' ? 'active' : ''}`} onClick={() => setActiveTab('view')}>
             <Network className="inline w-4 h-4 mr-1"/> View
           </button>
-          <button className={`header-tab ${activeTab === 'prompts' ? 'active' : ''}`} onClick={() => setActiveTab('prompts')}>
-            <BookOpen className="inline w-4 h-4 mr-1"/> Prompts
+          <button className={`header-tab ${activeTab === 'builder' ? 'active' : ''}`} onClick={() => setActiveTab('builder')}>
+            <BookOpen className="inline w-4 h-4 mr-1"/> Builder
           </button>
         </div>
         <div className="status-indicator">
@@ -750,7 +580,6 @@ export default function App() {
             pipelines={pipelines}
             selectedPipelineId={selectedPipelineId}
             onPipelineChange={setSelectedPipelineId}
-            promptBank={promptBank}
           />
         )}
         {activeTab === 'pdfs' && (
@@ -759,11 +588,10 @@ export default function App() {
         {activeTab === 'library' && (
           <LibraryView onSelect={handleSelectJson} onDelete={handleDeleteGuideline} />
         )}
-        {activeTab === 'prompts' && (
-          <PipelineBuilderView 
-            promptBank={promptBank} 
-            pipelines={pipelines} 
-            onRefresh={fetchAll} 
+        {activeTab === 'builder' && (
+          <PipelineBuilderView
+            pipelines={pipelines}
+            onRefresh={fetchAll}
           />
         )}
         {activeTab === 'view' && (

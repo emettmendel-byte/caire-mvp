@@ -1,1 +1,0 @@
-{'signoffs': {'required': ['Clinician Signoff: Manual repair completed'], 'provided': ['Clinician Signoff: Manual repair completed']}, 'open_questions': []}
